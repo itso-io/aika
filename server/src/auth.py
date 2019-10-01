@@ -1,7 +1,8 @@
-from flask import Blueprint, session, render_template, abort, redirect, request, url_for
+from flask import Blueprint, session, render_template, abort, redirect, request, url_for, jsonify
 import google_auth_oauthlib.flow
 import jwt
 
+from data import api_credentials
 from utils import get_file_full_path
 
 
@@ -38,6 +39,9 @@ def auth_init():
 
 @auth.route('/auth/google/callback')
 def auth_callback():
+  if request.args.get('error') == 'access_denied':
+    return redirect('/')
+
   state = session['state']
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE,
@@ -48,13 +52,29 @@ def auth_callback():
 
   flow.fetch_token(authorization_response=request.url)
 
-  # TODO: Store these credentials with the user's email
-  credentials = flow.credentials
-  session['credentials'] = credentials_to_dict(credentials)
-
   # this token came from Google, so don't worry aboue re-verifying its signature in this context
-  id_data = jwt.decode(credentials.id_token, verify=False)
+  id_data = jwt.decode(flow.credentials.id_token, verify=False)
 
   session['user_email'] = None if not id_data['email_verified'] else id_data['email']
 
+  if session['user_email'] and flow.credentials.refresh_token:  # refresh token only provided on initial auth
+    api_credentials.store_user_api_credentials(session['user_email'], flow.credentials)
+
   return session['user_email']
+
+
+@auth.route('/auth/google/check')
+def auth_check():
+  # See https://developers.google.com/calendar/quickstart/python
+  calendar_client = api_credentials.get_calendar_api_client(session['user_email'])
+
+  events_result = calendar_client.events().list(calendarId='primary',
+                                                maxResults=10,
+                                                singleEvents=True,
+                                                orderBy='startTime'
+                                                ).execute()
+
+
+  events = events_result.get('items', [])
+
+  return jsonify(events)
