@@ -8,3 +8,9 @@ google-auth-oauthlib==0.3.0
 google-cloud-datastore==1.9.0
 pyjwt==1.7.1
 requests==2.22.0
+Flask-SQLAlchemy
+Flask-Migrate
+marshmallow
+python-dotenv
+pymysql
+pyyaml

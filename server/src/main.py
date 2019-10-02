@@ -1,12 +1,15 @@
 import os
 
+from utils import set_logging, set_config
 from flask import Flask
-
 from auth import auth
+import logging
+
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
+set_logging(app)
+set_config(app)
 
 
 @app.route('/')
