@@ -11,7 +11,7 @@ jobs:
       - run: CLOUDSDK_CORE_DISABLE_PROMPTS=1 $HOME/google-cloud-sdk/install.sh
       - run: echo 'source ${HOME}/google-cloud-sdk/path.bash.inc' >> $BASH_ENV
       # Retrieve our secrets from the CircleCI environment
-      - run: echo $ENV_BASE_64 | base64 --decode > ./.env
+      - run: echo $ENV_BASE_64 | base64 --decode > server/.env
       # Deployment service account needs these roles:
       # - App Engine Deployer (to deploy new versions)
       # - App Engine Service Admin (to change versions)
@@ -19,7 +19,7 @@ jobs:
       # - Storage Object Creator (to upload app files)
       # - Storage Object Viewer (to list app files)
       # - Cloud Build Editor (to create builds)
-      - run: python server/scripts/deploy_set_variables.py
+      - run: cd server && python scripts/deploy_set_variables.py
       - run: echo $DEPLOYER_CLIENT_SECRETS | base64 --decode > ${HOME}/deployer_client_secrets.json
       - run: gcloud auth activate-service-account --key-file ${HOME}/deployer_client_secrets.json
       - run: gcloud config set project $GCLOUD_PROJECT
