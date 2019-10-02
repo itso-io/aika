@@ -1,6 +1,4 @@
 Flask==1.0.2
-Flask-SQLAlchemy
-marshmallow
 google-api-python-client==1.7.11
 google-auth==1.6.3
 google-auth-httplib2==0.0.3
@@ -8,9 +6,9 @@ google-auth-oauthlib==0.3.0
 google-cloud-datastore==1.9.0
 pyjwt==1.7.1
 requests==2.22.0
-Flask-SQLAlchemy
-Flask-Migrate
-marshmallow
-python-dotenv
-pymysql
-pyyaml
+Flask-SQLAlchemy==2.4.1
+Flask-Migrate==2.5.2
+marshmallow==3.2.1
+python-dotenv==0.10.3
+PyMySQL==0.9.3
+PyYAML==5.1.2
