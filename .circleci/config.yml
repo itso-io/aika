@@ -18,6 +18,8 @@ jobs:
       # - Cloud Datastore Index Admin (to update indexes)
       # - Storage Object Creator (to upload app files)
       # - Storage Object Viewer (to list app files)
+      # - Cloud Build Editor (to create builds)
+      - run: python scripts/deploy_set_variables.py
       - run: echo $DEPLOYER_CLIENT_SECRETS | base64 --decode > ${HOME}/deployer_client_secrets.json
       - run: gcloud auth activate-service-account --key-file ${HOME}/deployer_client_secrets.json
       - run: gcloud config set project $GCLOUD_PROJECT
