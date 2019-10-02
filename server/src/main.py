@@ -26,12 +26,12 @@ def hello():
 
 @app.route('/test-insert')
 def test_insert_handler():
-    """Add a row to the calander database"""
+    """Add a row to the User table"""
     ed_user = User(name='ed', test='edsnickname', test_2='sdfsdf')
     db.session.add(ed_user)
     db.session.commit()
     
-    return app.config['SQLALCHEMY_DATABASE_URI'] + ' - ' + ed_user.name
+    return f'{ed_user.name} added to the database'
 
 
 app.register_blueprint(auth)
