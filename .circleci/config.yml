@@ -12,6 +12,7 @@ jobs:
       - run: echo 'source ${HOME}/google-cloud-sdk/path.bash.inc' >> $BASH_ENV
       # Retrieve our secrets from the CircleCI environment
       - run: echo $ENV_BASE_64 | base64 --decode > server/.env
+      - run: echo $GOOGLE_CLIENT_SECRETS | base64 --decode > server/src/google_client_secret.json
       # Deployment service account needs these roles:
       # - App Engine Deployer (to deploy new versions)
       # - App Engine Service Admin (to change versions)
