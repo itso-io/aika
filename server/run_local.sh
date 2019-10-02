@@ -2,6 +2,7 @@
 
 
 export FLASK_ENV=development
+export DATASTORE_EMULATOR_HOST=localhost:8277
 
-$(gcloud beta emulators datastore env-init)
+
 python src/main.py

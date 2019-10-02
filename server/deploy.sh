@@ -1,5 +1,5 @@
 #!/bin/bash
 
 python scripts/deploy_set_variables.py
-gcloud app deploy src/app.yaml
+gcloud app deploy --project aika-prod src/app.yaml src/index.yaml
 git checkout src/app.yaml

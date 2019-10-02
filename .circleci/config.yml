@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build_and_deploy:
+    docker:
+      - image: circleci/node:9.11.2-stretch-browsers
+    steps:
+      - checkout
+      # install gcloud
+      - run: curl -o $HOME/google-cloud-sdk-265.0.0-linux-x86_64.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-265.0.0-linux-x86_64.tar.gz
+      - run: tar zxf $HOME/google-cloud-sdk-265.0.0-linux-x86_64.tar.gz -C $HOME
+      - run: CLOUDSDK_CORE_DISABLE_PROMPTS=1 $HOME/google-cloud-sdk/install.sh
+      - run: echo 'source ${HOME}/google-cloud-sdk/path.bash.inc' >> $BASH_ENV
+      # Retrieve our secrets from the CircleCI environment
+      - run: echo $ENV_BASE_64 | base64 --decode > ./.env
+      # Deployment service account needs these roles:
+      # - App Engine Deployer (to deploy new versions)
+      # - App Engine Service Admin (to change versions)
+      # - Cloud Datastore Index Admin (to update indexes)
+      # - Storage Object Creator (to upload app files)
+      # - Storage Object Viewer (to list app files)
+      - run: echo $DEPLOYER_CLIENT_SECRETS | base64 --decode > ${HOME}/deployer_client_secrets.json
+      - run: gcloud auth activate-service-account --key-file ${HOME}/deployer_client_secrets.json
+      - run: gcloud config set project $GCLOUD_PROJECT
+      - run: gcloud app deploy --project $GCLOUD_PROJECT -q -v $(date +%s) server/src/app.yaml server/src/index.yaml
+# TODO: Split into build/test and deploy jobs (latter is the only job that needs gcloud/deployment creds).
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_deploy:
+          filters:
+            branches:
+              only: 'jon/deploy'
