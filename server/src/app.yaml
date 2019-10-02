@@ -4,6 +4,8 @@ env_variables:
   DB_USER: placeholder
   DB_PASS: placeholder
   DB_NAME: placeholder
+  DB_HOST: placeholder
+  DB_PORT: placeholder
   CLOUD_SQL_CONNECTION_NAME: placeholder
   OAUTHLIB_INSECURE_TRANSPORT: placeholder
 handlers:

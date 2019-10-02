@@ -3,6 +3,7 @@ from logging.config import dictConfig
 import logging
 from dotenv import load_dotenv
 import yaml
+import sqlalchemy
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -12,9 +13,30 @@ except ImportError:
 def get_file_full_path(relative_to_root):
   return os.path.join(os.path.dirname(os.path.realpath(__file__)), relative_to_root)
 
+def set_config_db(app):
+  db_user = app.config["DB_USER"]
+  db_pass = app.config["DB_PASS"]
+  db_name = app.config["DB_NAME"]
+  db_host = app.config["DB_HOST"]
+  db_port = app.config["DB_PORT"]
+  cloud_sql_connection_name = app.config["CLOUD_SQL_CONNECTION_NAME"]
+
+  url = str(sqlalchemy.engine.url.URL(
+      drivername='mysql+pymysql',
+      username=db_user,
+      password=db_pass,
+      database=db_name,
+      host=db_host,
+      port=db_port,
+      # query={
+      #   'unix_socket': '/cloudsql/{}'.format(cloud_sql_connection_name)
+      # }
+  ))
+  app.config['SQLALCHEMY_DATABASE_URI'] = url
+  app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 def set_config(app):
   load_dotenv()
-
   dirname = os.path.dirname(__file__)
   app_filename = 'app.yaml'
   stream = open(os.path.join(dirname, app_filename), 'r')
@@ -36,6 +58,7 @@ def set_config(app):
   logging.info('')
   logging.info('You can either set them manually on your local machine, or add '
                'a .env file to the {GIT_ROOT}/server directory')
+  set_config_db(app)
 
 
 
