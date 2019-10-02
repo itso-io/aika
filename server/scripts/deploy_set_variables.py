@@ -5,6 +5,7 @@ import sys
 from dotenv import load_dotenv
 from logging.config import dictConfig
 load_dotenv()
+
 dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -26,9 +27,9 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
-stream = open('src/app.yaml', 'r')
-stream2 = open('src/app2.yaml', 'w')
-app_yaml = yaml.load(stream, Loader)
+stream_read = open('src/app.yaml', 'r')
+
+app_yaml = yaml.load(stream_read, Loader)
 
 env_vars = {}
 for variable, app_val in app_yaml['env_variables'].items():
@@ -46,5 +47,6 @@ for variable, app_val in app_yaml['env_variables'].items():
 
 app_yaml['env_variables'] = env_vars
 
-yaml.dump(app_yaml, stream2)
+stream_write = open('src/app.yaml', 'w')
+yaml.dump(app_yaml, stream_write)
 
