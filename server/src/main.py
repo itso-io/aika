@@ -27,7 +27,7 @@ def hello():
 @app.route('/test-insert')
 def test_insert_handler():
     """Add a row to the User table"""
-    ed_user = User(name='ed', test='edsnickname', test_2='sdfsdf')
+    ed_user = User(name='ed', nickname='edsnickname')
     db.session.add(ed_user)
     db.session.commit()
     
