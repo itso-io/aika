@@ -31,9 +31,6 @@ def new_alchemy_encoder(revisit_self = False, fields_to_expand = ['user']):
 
                 # TODO filter out non supported objects like functions
                 for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x != 'query' and x != 'query_class']:
-                    # print(field)
-                    # print(obj.__getattribute__(field).__class__)
-                    # print(isinstance(obj.__getattribute__(field).__class__, DeclarativeMeta))
                     fields[field] = obj.__getattribute__(field)
                 # a json-encodable dict
                 return fields

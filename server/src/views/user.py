@@ -62,14 +62,11 @@ def create_user_and_database():
 
     try:
         create_user_query = f'CREATE USER \'{new_db_name}\'@\'localhost\' IDENTIFIED BY \'{new_password}\';'
-        print(create_user_query)
         db.engine.execute(create_user_query)
-        print('test')
     except Exception as err:
         logging.warn(err)
     
     grant_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* TO \'{new_db_name}\'@\'localhost\';'
-    print(grant_perms_query)
     db.engine.execute(grant_perms_query)
 
     db.session.add(user)
