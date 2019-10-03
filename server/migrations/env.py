@@ -29,6 +29,11 @@ logger = logging.getLogger('alembic.env')
 config.set_main_option(
     'sqlalchemy.url', current_app.config.get(
         'SQLALCHEMY_DATABASE_URI').replace('%', '%%'))
+
+
+
+print(current_app.config.get('SQLALCHEMY_MULTI_DB'))
+
 bind_names = []
 for name, url in current_app.config.get("SQLALCHEMY_BINDS").items():
     context.config.set_section_option(name, "sqlalchemy.url", url.replace(

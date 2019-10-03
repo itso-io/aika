@@ -12,11 +12,11 @@ from hashlib import md5
 
 def random_password():
     """Generate a random password """
-    randomSource = string.ascii_letters + string.digits + string.punctuation
+    randomSource = string.ascii_letters + string.digits + '!#&()*+,-/:;<=>?@[]^_|'
     password = random.choice(string.ascii_lowercase)
     password += random.choice(string.ascii_uppercase)
     password += random.choice(string.digits)
-    password += random.choice('!#$%&\()*+,-./:;<=>?@[\\]^_{|}~')
+    password += random.choice('!#&()*+,-/:;<=>?@[]^_|')
 
     for i in range(6):
         password += random.choice(randomSource)
