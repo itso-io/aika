@@ -1,9 +1,10 @@
 
 import json
-
+import logging
 
 from flask import jsonify, request, Blueprint
 from sqlalchemy_utils import database_exists, drop_database, create_database
+import pymysql
 
 from models.base import db
 from models.app_main import User, UserDatabase
@@ -30,8 +31,7 @@ def create_user_and_database():
         host='127.0.0.1',
         port=3306,
         database=new_db_name,
-        query='test',
-        user=user
+        query='test'
     )
     new_database = UserDatabase(
         drivername='mysql+pymysql',
@@ -58,21 +58,27 @@ def create_user_and_database():
     priveleges_string = ', '.join(priveleges)
 
     app.config['SQLALCHEMY_BINDS']['user_db'] = url
-    db.create_all(bind=['user_db'])
-    create_user_query = f'CREATE USER \'{new_db_name}\'@\'localhost\' IDENTIFIED BY \'{new_password}\';'
-    db.engine.execute(create_user_query)
-    grent_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* TO \'{new_db_name}\'@\'localhost\';'
-    db.engine.execute(grent_perms_query)
+    db.create_all(['user_db'])
 
-    # TODO add a new user to the database with the right privaliges and create that user in the application db
+    try:
+        create_user_query = f'CREATE USER \'{new_db_name}\'@\'localhost\' IDENTIFIED BY \'{new_password}\';'
+        print(create_user_query)
+        db.engine.execute(create_user_query)
+        print('test')
+    except Exception as err:
+        logging.warn(err)
+    
+    grant_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* TO \'{new_db_name}\'@\'localhost\';'
+    print(grant_perms_query)
+    db.engine.execute(grant_perms_query)
 
     db.session.add(user)
-    db.session.add(new_database)
     db.session.commit()
 
     udb_dict = json.loads(json.dumps(user, cls=new_alchemy_encoder(False), check_circular=False))
     
     return jsonify(udb_dict)
+    return jsonify({})
 
 
 @user.route('/get-user')

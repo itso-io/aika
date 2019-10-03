@@ -8,11 +8,12 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import ProgrammingError
 
 from models.base import db
+from models.user_calendar import Events, EventAttendees
+
 from utils.app import app
 from utils.logging import set_logging
 from utils.config import set_config
 from utils.database import get_all_user_db_urls
-
 from views import blueprints
 
 
@@ -34,7 +35,8 @@ with app.app_context():
     }
     try:
         dbs = get_all_user_db_urls()
-        # app.config['SQLALCHEMY_BINDS']['testsd224'] = dbs['testsd224']
+        app.config['SQLALCHEMY_MULTI_DB'] = app.config['SQLALCHEMY_MULTI_DB'] if 'SQLALCHEMY_MULTI_DB' in  app.config else {}
+        app.config['SQLALCHEMY_MULTI_DB']['user_db'] = dbs
     except ProgrammingError:
         logging.warn('The tables aren\'t defined yet')
     migrate = Migrate(app, db)
