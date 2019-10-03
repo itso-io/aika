@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 python scripts/deploy_set_variables.py
 gcloud app deploy src/app.yaml
