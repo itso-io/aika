@@ -1,17 +1,18 @@
+# Native
 import os
-from logging.config import dictConfig
 import logging
-from dotenv import load_dotenv
+
+# Installed
+from sqlalchemy.engine.url import URL as SqlAlchamyURL
 import yaml
-import sqlalchemy
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
+from dotenv import load_dotenv
 
-
-def get_file_full_path(relative_to_root):
-  return os.path.join(os.path.dirname(os.path.realpath(__file__)), relative_to_root)
+# From app
+## N/A
 
 def set_config_db(app):
   db_user = app.config["DB_USER"]
@@ -21,7 +22,7 @@ def set_config_db(app):
   db_port = app.config["DB_PORT"]
   cloud_sql_connection_name = app.config["CLOUD_SQL_CONNECTION_NAME"]
 
-  url = str(sqlalchemy.engine.url.URL(
+  url = str(SqlAlchamyURL(
       drivername='mysql+pymysql',
       username=db_user,
       password=db_pass,
@@ -38,7 +39,8 @@ def set_config_db(app):
 def set_config(app):
   load_dotenv()
   dirname = os.path.dirname(__file__)
-  app_filename = 'app.yaml'
+  
+  app_filename = '../app.yaml'
   stream = open(os.path.join(dirname, app_filename), 'r')
 
   env_vars = {}
