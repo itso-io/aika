@@ -1,7 +1,11 @@
-from models.shared import db
+from sqlalchemy.orm import relationship
 
-class Events(db.Model):
+from models.base import Base, db
+
+
+class Events(Base):
     __tablename__ = 'events'
+    __bind_key__ = 'user_db'
     id = db.Column(db.String(100), primary_key=True)
     calendar_id = db.Column(db.String(150))
     created_at = db.Column(db.TIMESTAMP)
@@ -12,10 +16,12 @@ class Events(db.Model):
     start_time = db.Column(db.TIMESTAMP)
     end_time = db.Column(db.TIMESTAMP)
     description = db.Column(db.String(5000))
+    event_attendees = relationship("EventAttendees", back_populates="event")
 
 
-class EventAttendees(db.Model):
+class EventAttendees(Base):
     __tablename__ = 'event_attendees'
+    __bind_key__ = 'user_db'
     id = db.Column(db.Integer, primary_key=True) # Auto increment should work automatically
     event_id = db.Column(db.String(100), db.ForeignKey('events.id'))
     email = db.Column(db.String(200))
@@ -25,3 +31,4 @@ class EventAttendees(db.Model):
     response_status = db.Column(db.String(20))
     is_organizer = db.Column(db.BOOLEAN)
     is_optional = db.Column(db.BOOLEAN)
+    event = relationship("Events", back_populates="event_attendees")

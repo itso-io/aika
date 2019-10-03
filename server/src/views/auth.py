@@ -3,7 +3,7 @@ import google_auth_oauthlib.flow
 import jwt
 
 from data import api_credentials
-from utils import get_file_full_path
+from utils.common import get_file_full_path
 
 
 CLIENT_SECRETS_FILE = get_file_full_path('google_client_secret.json')
