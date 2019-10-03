@@ -7,7 +7,6 @@ env_variables:
   DB_HOST: placeholder
   DB_PORT: placeholder
   CLOUD_SQL_CONNECTION_NAME: placeholder
-  OAUTHLIB_INSECURE_TRANSPORT: placeholder
 handlers:
 - url: /.*
   script: auto

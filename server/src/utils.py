@@ -58,9 +58,10 @@ def set_config(app):
   logging.info('')
   logging.info('You can either set them manually on your local machine, or add '
                'a .env file to the {GIT_ROOT}/server directory')
+
+  app.config['SECRET_KEY'] = app.config['FLASK_SECRET_KEY']
+
   set_config_db(app)
-
-
 
 
 def set_logging(app):
