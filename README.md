@@ -5,7 +5,7 @@ repo will start with pumping data from Google Calendar to a database.
 
 ## Bring up local
 
-Get `google_client_secret.json` and put it in `/server/src`.
+Get `google_client_secret.json` and put it in `server/src`.
 
 Run:
 
