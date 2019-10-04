@@ -16,10 +16,6 @@ from utils.config import set_config
 from utils.database import get_all_user_db_urls
 from views import blueprints
 
-
-
-
-
 set_logging(app)
 set_config(app)
 
