@@ -22,14 +22,18 @@ def create_user_and_database():
     new_db_name = email_to_name(request.args.get('email'))
     new_password = random_password()
 
+    db_user = app.config["DB_USER"]
+    db_pass = app.config["DB_PASS"]
+    db_host = app.config["DB_HOST"]
+    db_port = app.config["DB_PORT"]
 
     user = User(email=request.args.get('email'))
     tmp_database_root = UserDatabase(
         drivername='mysql+pymysql',
-        username='root',
-        password='Holbewoner1987!',
-        host='127.0.0.1',
-        port=3306,
+        username=db_user,
+        password=db_pass,
+        host=db_host,
+        port=db_port,
         database=new_db_name,
         query='test'
     )
@@ -37,8 +41,8 @@ def create_user_and_database():
         drivername='mysql+pymysql',
         username=new_db_name,
         password=new_password,
-        host='127.0.0.1',
-        port=3306,
+        host=db_host,
+        port=db_port,
         database=new_db_name,
         query='test',
         user=user
