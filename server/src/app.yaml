@@ -1,11 +1,12 @@
 runtime: python37
 env_variables:
   FLASK_SECRET_KEY: placeholder
-  DB_USER: placeholder
-  DB_PASS: placeholder
-  DB_NAME: placeholder
-  DB_HOST: placeholder
-  DB_PORT: placeholder
+  APP_DB_USER: placeholder
+  APP_DB_PASS: placeholder
+  APP_DB_NAME: placeholder
+  APP_DB_HOST: placeholder
+  APP_DB_PORT: placeholder
+  EXAMPLE_DB_NAME: placeholder
   CLOUD_SQL_CONNECTION_NAME: placeholder
 handlers:
 - url: /.*

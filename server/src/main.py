@@ -12,7 +12,7 @@ from models.user_calendar import Events, EventAttendees
 
 from utils.app import app
 from utils.logging import set_logging
-from utils.config import set_config
+from utils.config import set_config, load_customer_db_config
 from utils.database import get_all_user_db_urls
 from views import blueprints
 
@@ -22,17 +22,8 @@ set_config(app)
 db.init_app(app)
 
 with app.app_context():
-    # TODO create a default option 'user_db' database (automatically?)
-    app.config['SQLALCHEMY_BINDS'] = {
-        # 'user_db': app.config["SQLALCHEMY_DATABASE_URI"]
-        # 'user_db': {
-        #     'lucas@itso.io': app.config["SQLALCHEMY_DATABASE_URI"]
-        # }
-    }
     try:
-        dbs = get_all_user_db_urls()
-        app.config['SQLALCHEMY_MULTI_DB'] = app.config['SQLALCHEMY_MULTI_DB'] if 'SQLALCHEMY_MULTI_DB' in  app.config else {}
-        app.config['SQLALCHEMY_MULTI_DB']['user_db'] = dbs
+        load_customer_db_config(app)
     except ProgrammingError:
         logging.warn('The tables aren\'t defined yet')
     migrate = Migrate(app, db)
@@ -41,6 +32,7 @@ with app.app_context():
 @app.route('/')
 def hello():
     return 'Hello World!'
+
 
 for blueprint in blueprints:
     app.register_blueprint(blueprint)

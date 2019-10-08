@@ -31,8 +31,8 @@ config.set_main_option(
         'SQLALCHEMY_DATABASE_URI').replace('%', '%%'))
 
 
-
-print(current_app.config.get('SQLALCHEMY_MULTI_DB'))
+multiple_databases = current_app.config.get('SQLALCHEMY_MULTI_DB')
+multiple_databases = multiple_databases if multiple_databases else {}
 
 bind_names = []
 for name, url in current_app.config.get("SQLALCHEMY_BINDS").items():
@@ -174,6 +174,59 @@ def run_migrations_online():
     finally:
         for rec in engines.values():
             rec['connection'].close()
+
+    for bind_name, databases in multiple_databases.items():
+        bind_config = context.config.get_section(bind_name)
+        for database_name, database_url in databases.items():
+            print(database_name, database_url)
+            # try:
+            logging.info(f'Starting to update database {database_name}')
+            custom_config = {
+                'here': bind_config['here'],
+                'sqlalchemy.url': database_url
+            }
+            rec = {}
+            rec['engine'] = engine_from_config(
+                custom_config,
+                prefix='sqlalchemy.',
+                poolclass=pool.NullPool)
+
+            engine = rec['engine']
+            rec['connection'] = conn = engine.connect()
+
+            if USE_TWOPHASE:
+                rec['transaction'] = conn.begin_twophase()
+            else:
+                rec['transaction'] = conn.begin()
+
+            context.configure(
+                connection=rec['connection'],
+                upgrade_token="%s_upgrades" % bind_name,
+                downgrade_token="%s_downgrades" % bind_name,
+                target_metadata=get_metadata(bind_name),
+                process_revision_directives=process_revision_directives,
+                **current_app.extensions['migrate'].configure_args
+            )
+            context.run_migrations(engine_name=name)
+
+            if USE_TWOPHASE:
+                rec['transaction'].prepare()
+
+            rec['transaction'].commit()
+
+            # except Exception as err:
+            #     logging.warn(f'Failed to update database {database_name}')
+            #     for rec in engines.values():
+            #         rec['transaction'].rollback()
+            #     print(err)
+            #     raise
+            # finally:
+            rec['connection'].close()
+            # engine = engine_from_config(
+            #     config.get_section(config.config_ini_section),
+            #     prefix='sqlalchemy.',
+            #     poolclass=pool.NullPool,
+            # )
 
 
 if context.is_offline_mode():

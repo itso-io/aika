@@ -22,7 +22,7 @@ class Events(Base):
 class EventAttendees(Base):
     __tablename__ = 'event_attendees'
     __bind_key__ = 'user_db'
-    id = db.Column(db.Integer, primary_key=True) # Auto increment should work automatically
+    id = db.Column(db.Integer, primary_key=True)  # Auto increment should work automatically
     event_id = db.Column(db.String(100), db.ForeignKey('events.id'))
     email = db.Column(db.String(200))
     working_hours_start_time = db.Column(db.TIME)

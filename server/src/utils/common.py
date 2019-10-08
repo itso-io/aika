@@ -5,10 +5,11 @@ import string
 from hashlib import md5
 
 # Installed
-## N/A
+# N/A
 
 # From app
-## N/A
+# N/A
+
 
 def random_password():
     """Generate a random password """
@@ -28,8 +29,8 @@ def random_password():
 
 
 def get_file_full_path(relative_to_root):
-  return os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', relative_to_root)
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', relative_to_root)
 
 
 def md5_hash(s):
-  return md5(s.encode()).hexdigest()
+    return md5(s.encode()).hexdigest()

@@ -2,6 +2,7 @@ from sqlalchemy.orm import relationship
 
 from models.base import Base, db
 
+
 class User(Base):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +22,3 @@ class UserDatabase(Base):
     database = db.Column(db.String(128))
     query = db.Column(db.String(256))
     user = relationship("User", back_populates="databases")
-
-
-    
-
