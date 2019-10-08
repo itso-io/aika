@@ -4,6 +4,19 @@ import os
 import sys
 from dotenv import load_dotenv
 from logging.config import dictConfig
+from git import Repo
+
+service_name = 'default'
+
+try:
+    repo = Repo('..')
+    branch = repo.active_branch.name
+    if branch != 'master':
+        service_name = branch.translate ({ord(c): "-" for c in "!@#$%^&*()[]{};:,./<>?\|`~-=_+"})
+except Exception:
+    pass
+
+
 load_dotenv()
 
 dictConfig({
@@ -46,6 +59,7 @@ for variable, app_val in app_yaml['env_variables'].items():
     sys.exit(f'Environment variable {variable} is not set')
 
 app_yaml['env_variables'] = env_vars
+app_yaml['service'] = service_name
 
 stream_write = open('src/app.yaml', 'w')
 yaml.dump(app_yaml, stream_write)

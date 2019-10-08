@@ -14,10 +14,8 @@ user = Blueprint('user', __name__)
 @user.route('/create-user')
 def create_user():
     """Add a row to the User table"""
-
     email = request.args.get('email')
     user = controller_create_user(email)
-
     udb_dict = json.loads(json.dumps(
         user, cls=new_alchemy_encoder(False), check_circular=False))
 
