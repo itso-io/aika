@@ -14,23 +14,30 @@ def create_user(email):
     new_password = random_password()
 
     user = User(email=email)
+
+    # Create a temporary user that we won't save with
+    # create database privileges to get a database URL
+    # that will create the new database. This user
+    # will not be stored, just used to create a url.
     tmp_database_root = UserDatabase(
         drivername='mysql+pymysql',
-        username='root',
-        password='Holbewoner1987!',
-        host='127.0.0.1',
-        port=3306,
+        username=app.config["APP_DB_USER"],
+        password=app.config["APP_DB_PASS"],
+        host=app.config["APP_DB_HOST"],
+        port=app.config["APP_DB_PORT"],
         database=new_db_name,
-        query='test'
+        query=app.config["CLOUD_SQL_CONNECTION_NAME"]
     )
+
+    # Create a user that will have access to the new datase
     new_database = UserDatabase(
         drivername='mysql+pymysql',
         username=new_db_name,
         password=new_password,
-        host='127.0.0.1',
-        port=3306,
+        host=app.config["APP_DB_HOST"],
+        port=app.config["APP_DB_PORT"],
         database=new_db_name,
-        query='test',
+        query=app.config["CLOUD_SQL_CONNECTION_NAME"],
         user=user
     )
     url = get_db_url(tmp_database_root)
