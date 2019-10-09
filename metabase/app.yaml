@@ -1,8 +1,0 @@
-runtime: custom
-env: flex
-
-network:
-  forwarded_ports:
-    - 80:3000
-
-service: metabase-three
