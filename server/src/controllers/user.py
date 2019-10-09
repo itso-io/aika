@@ -9,6 +9,7 @@ from utils.common import random_password
 from models.app_main import User, UserDatabase
 
 
+# TODO create Metabase user
 def create_user(email):
     new_db_name = email_to_name(email)
     new_password = random_password()
@@ -47,6 +48,8 @@ def create_user(email):
         create_database(url)
 
     # Step 2: create all the tables in the new database
+    # Setting the config to the new database url is a hack
+    # to make sure SQLALCHAMY does all the heavy lifting
     app.config['SQLALCHEMY_BINDS']['user_db'] = url
     db.create_all(['user_db'])
 
@@ -96,6 +99,10 @@ def create_user(email):
             alembic_insert_query += f'(\'{row[0]}\')'
         db.engine.execute(alembic_insert_query)
 
+    # Step 8: Add the user to the session. As the relationship
+    # to a UserDatabase object is created in the new_database creation,
+    # adding the User object user to the session and committing it will
+    # create a new User and UserDatabase row
     db.session.add(user)
     db.session.commit()
 
