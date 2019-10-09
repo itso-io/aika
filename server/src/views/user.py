@@ -12,7 +12,7 @@ from controllers.user import get_user as controller_get_user
 user = Blueprint('user', __name__)
 
 
-@user.route('/create-user')
+@user.route('/api/create-user')
 def create_user():
     """Add a row to the User table"""
     email = request.args.get('email')
@@ -22,7 +22,7 @@ def create_user():
         return err.as_response()
 
 
-@user.route('/get-user')
+@user.route('/api/get-user')
 def get_user():
     email = request.args.get('email')
     try:
