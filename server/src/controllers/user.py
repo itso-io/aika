@@ -1,12 +1,16 @@
 import logging
 
 from sqlalchemy_utils import database_exists, drop_database, create_database
+from sqlalchemy.orm.exc import NoResultFound
 
 from utils.database import get_db_url, email_to_name
 from models.base import db
 from utils.app import app
+from utils.enums import APIErrorTypes
 from utils.common import random_password
 from models.app_main import User, UserDatabase
+
+from utils.errors import APIError
 
 
 # TODO create Metabase user
@@ -14,21 +18,14 @@ def create_user(email):
     new_db_name = email_to_name(email)
     new_password = random_password()
 
-    user = User(email=email)
+    if User.query.filter_by(email=email).count() > 0:
+        raise APIError(
+            http_code=409,
+            error_type_key=APIErrorTypes.user_already_exists,
+            message=f'A user with email {email} already exists'
+        )
 
-    # Create a temporary user that we won't save with
-    # create database privileges to get a database URL
-    # that will create the new database. This user
-    # will not be stored, just used to create a url.
-    tmp_database_root = UserDatabase(
-        drivername='mysql+pymysql',
-        username=app.config["APP_DB_USER"],
-        password=app.config["APP_DB_PASS"],
-        host=app.config["APP_DB_HOST"],
-        port=app.config["APP_DB_PORT"],
-        database=new_db_name,
-        query=app.config["CLOUD_SQL_CONNECTION_NAME"]
-    )
+    user = User(email=email)
 
     # Create a user that will have access to the new datase
     new_database = UserDatabase(
@@ -41,10 +38,25 @@ def create_user(email):
         query=app.config["CLOUD_SQL_CONNECTION_NAME"],
         user=user
     )
-    url = get_db_url(tmp_database_root)
+
+    url = get_db_url({
+        'drivername': 'mysql+pymysql',
+        'username': app.config["APP_DB_USER"],
+        'password': app.config["APP_DB_PASS"],
+        'host': app.config["APP_DB_HOST"],
+        'port': app.config["APP_DB_PORT"],
+        'database': new_db_name,
+        'query': app.config["CLOUD_SQL_CONNECTION_NAME"]
+    })
 
     # Step 1: create the new database
-    if not database_exists(url):
+    if database_exists(url):
+        raise APIError(
+            http_code=409,
+            error_type_key=APIErrorTypes.database_already_exists,
+            message=f'Trying to create database {new_db_name} for user {email}, but the database already exists'
+        )
+    else:
         create_database(url)
 
     # Step 2: create all the tables in the new database
@@ -80,7 +92,8 @@ def create_user(email):
     db.engine.execute(grant_perms_query)
 
     # Step 5: Create the alembic table for migration purposes
-    alembic_create_query = f'CREATE TABLE `{new_db_name}`.`alembic_version` (' \
+    alembic_create_query = f'CREATE TABLE `{new_db_name}`.`alembic_version` ' \
+                           f'(' \
                            f'  `version_num` varchar(32) NOT NULL,' \
                            f'  PRIMARY KEY (`version_num`)' \
                            f')'
@@ -93,7 +106,9 @@ def create_user(email):
 
     # Step 7: Insert the data into the new alembic table
     if len(versions) > 0:
-        alembic_insert_query = f'INSERT INTO `{new_db_name}`.`alembic_version` (`version_num`)\n' \
+        alembic_insert_query = f'INSERT INTO `{new_db_name}`.' \
+                               f'`alembic_version` ' \
+                               f'(`version_num`)\n' \
                                f'VALUES\n'
         for row in versions:
             alembic_insert_query += f'(\'{row[0]}\')'
@@ -110,4 +125,11 @@ def create_user(email):
 
 
 def get_user(email):
-    return db.session.query(User).filter(User.email == email).one_or_none()
+    try:
+        return User.query.filter_by(email=email).one()
+    except NoResultFound:
+        raise APIError(
+            http_code=409,
+            error_type_key=APIErrorTypes.user_not_found,
+            message=f'Can\'t find a user with the email {email}'
+        )

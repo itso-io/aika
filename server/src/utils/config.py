@@ -108,12 +108,14 @@ def set_config(app):
 
     set_config_db(app)
 
+
 def set_logging(app):
     dictConfig({
         'version': 1,
         'formatters': {
             'default': {
-                'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+                'format': '[%(asctime)s] %(levelname)s in %(module)s: '
+                          '%(message)s'
             }
         },
         'handlers': {
