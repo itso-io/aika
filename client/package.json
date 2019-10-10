@@ -11,13 +11,15 @@
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
+    "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "copy-bundle": "mkdir -p ../server/src/static/scripts && cp build/bundle.js ../server/src/static/scripts/",
+    "build": "react-app-rewired build && yarn copy-bundle",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

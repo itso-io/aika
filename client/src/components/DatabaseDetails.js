@@ -1,19 +1,14 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-import * as actions from '../actions';
-import { syncStatusPerCalendar } from '../getters';
-
-
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import * as actions from '../actions';
+import { syncStatusPerCalendar } from '../getters';
 
 
 const mapStateToProps = (state) => ({
