@@ -10,6 +10,12 @@ env_variables:
   CLOUD_SQL_CONNECTION_NAME: placeholder
   CLOUD_TASK_QUEUE: placeholder
 handlers:
+- url: /images
+  secure: always
+  static_dir: static/images
+- url: /scripts
+  secure: always
+  static_dir: static/scripts
 - url: /.*
   script: auto
   secure: always
