@@ -9,6 +9,12 @@ env_variables:
   EXAMPLE_DB_NAME: placeholder
   CLOUD_SQL_CONNECTION_NAME: placeholder
 handlers:
+- url: /images
+  secure: always
+  static_dir: static/images
+- url: /scripts
+  secure: always
+  static_dir: static/scripts
 - url: /.*
   script: auto
   secure: always

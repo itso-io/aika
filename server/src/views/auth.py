@@ -66,7 +66,7 @@ def auth_callback():
         api_credentials.store_user_api_credentials(
             session['user_email'], flow.credentials)
 
-    return session['user_email']
+    return redirect('/database')
 
 
 @auth.route('/auth/google/check')

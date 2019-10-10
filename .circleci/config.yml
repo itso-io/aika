@@ -13,6 +13,15 @@ jobs:
       # Retrieve our secrets from the CircleCI environment
       - run: echo $ENV_BASE_64 | base64 --decode > server/.env
       - run: echo $GOOGLE_CLIENT_SECRETS | base64 --decode > server/src/google_client_secret.json
+      # build client
+      - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      - run: sudo apt-get install apt-transport-https
+      - run: sudo apt-get update
+      - run: sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+      - run: sudo apt-get install -y nodejs
+      - run: sudo apt-get install yarn
+      - run: cd client && yarn install && yarn build
       # Deployment service account needs these roles:
       # - App Engine Deployer (to deploy new versions)
       # - App Engine Service Admin (to change versions)
