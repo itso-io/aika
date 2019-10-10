@@ -33,8 +33,9 @@ with app.app_context():
     migrate = Migrate(app, db)
 
 
-@app.route('/')
-def root():
+@app.route("/", defaults={"path": ""})
+@app.route('/<path:path>')
+def root(path):
     template = JINJA_ENVIRONMENT.get_template('index.html')
 
     return template.render(
