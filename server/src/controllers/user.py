@@ -8,13 +8,21 @@ from models.base import db
 from utils.app import app
 from utils.enums import APIErrorTypes
 from utils.common import random_password
+from utils.validators import is_email
 from models.app_main import User, UserDatabase
+
 
 from utils.errors import APIError
 
 
 # TODO create Metabase user
 def create_user(email):
+    if not is_email(email):
+        raise APIError(
+            http_code=409,
+            error_type_key=APIErrorTypes.invalid_email,
+            message=f'Invalid input. {email} is not a valid email'
+        )
     new_db_name = email_to_name(email)
     new_password = random_password()
 
@@ -66,16 +74,9 @@ def create_user(email):
     db.create_all(['user_db'])
 
     # Step 3: Create the new user so that someone can connect
-    try:
-        create_user_query = f'CREATE USER \'{new_db_name}\'@\'localhost\' ' \
-                            f'IDENTIFIED BY \'{new_password}\';'
-        db.engine.execute(create_user_query)
-    except Exception as err:
-        logging.warn(f'The database failed to create user {new_db_name} with '
-                     f'the following error:')
-        logging.warn(err)
-        logging.warn(f'As it likely failed because a user already existed, '
-                     f'we will continue')
+    create_user_query = f'CREATE USER \'{new_db_name}\'@\'%%\' ' \
+                        f'IDENTIFIED BY \'{new_password}\';'
+    db.engine.execute(create_user_query)
 
     # Step 4: Give the user the right privileges
     priveleges = [
@@ -83,13 +84,19 @@ def create_user(email):
         'INSERT',
         'SELECT',
         'UPDATE',
-        'ALTER'
+        'ALTER',
+        'DROP',
+        'REFERENCES'
     ]
     priveleges_string = ', '.join(priveleges)
 
     grant_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* ' \
-                        f'TO \'{new_db_name}\'@\'localhost\';'
+                        f'TO \'{new_db_name}\'@\'%%\';'
+
+    print(grant_perms_query)
     db.engine.execute(grant_perms_query)
+
+    
 
     # Step 5: Create the alembic table for migration purposes
     alembic_create_query = f'CREATE TABLE `{new_db_name}`.`alembic_version` ' \
@@ -124,12 +131,31 @@ def create_user(email):
     return user
 
 
-def get_user(email):
+def get_user_email(email):
+    if not is_email(email):
+        raise APIError(
+            http_code=409,
+            error_type_key=APIErrorTypes.user_not_found,
+            message=f'Invalid ID supplied. {email} is not a valid ID nor a '
+                    f'valid email address'
+        )
+
     try:
         return User.query.filter_by(email=email).one()
     except NoResultFound:
         raise APIError(
-            http_code=409,
+            http_code=404,
             error_type_key=APIErrorTypes.user_not_found,
             message=f'Can\'t find a user with the email {email}'
+        )
+
+
+def get_user_id(id):
+    try:
+        return User.query.filter_by(id=id).one()
+    except NoResultFound:
+        raise APIError(
+            http_code=404,
+            error_type_key=APIErrorTypes.user_not_found,
+            message=f'Can\'t find a user with the id {id}'
         )

@@ -12,7 +12,7 @@ try:
     repo = Repo('..')
     branch = repo.active_branch.name
     if branch != 'master':
-        service_name = branch.translate ({ord(c): "-" for c in "!@#$%^&*()[]{};:,./<>?\|`~-=_+"})
+        service_name = branch.translate({ord(c): "-" for c in "!@#$%^&*()[]{};:,./<>?\|`~-=_+"})
 except Exception:
     pass
 

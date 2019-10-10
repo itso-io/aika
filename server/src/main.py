@@ -5,9 +5,10 @@ from flask_sqlalchemy import SQLAlchemy as FlaskSQLAlchemy
 from flask_migrate import Migrate
 import jinja2
 from sqlalchemy.exc import ProgrammingError
+from sqlalchemy_utils import database_exists, drop_database, create_database
 
 from models.base import db
-from models.user_calendar import Events, EventAttendees
+from models.user_calendar import CalendarEvents, CalendarEventAttendees
 
 from utils.app import app
 from utils.logging import set_logging
@@ -24,6 +25,18 @@ set_logging(app)
 set_config(app)
 
 db.init_app(app)
+
+if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+    create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    logging.error(f'The application database has just been created, the tables'
+                  f' still need to be created (run reate_tables_new_db.sh) '
+                  f'for the app to work.')
+
+if not database_exists(app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI']):
+    create_database(app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI'])
+    logging.error(f'The example database has just been created, the tables '
+                  f'still need to be created (run reate_tables_new_db.sh) '
+                  f'for the app to work.')
 
 with app.app_context():
     try:

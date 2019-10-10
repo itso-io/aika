@@ -57,6 +57,10 @@ def auth_callback():
 
     session['user_email'] = None if not id_data['email_verified'] else id_data['email']
 
+    print("Auth details:")
+    print(session['user_email'])
+    print(flow.credentials.refresh_token)
+
     # refresh token only provided on initial auth
     if session['user_email'] and flow.credentials.refresh_token:
         api_credentials.store_user_api_credentials(

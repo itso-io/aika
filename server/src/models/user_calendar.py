@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 from models.base import Base, db
 
 
-class Events(Base):
-    __tablename__ = 'events'
+class CalendarEvents(Base):
+    __tablename__ = 'calendar_events'
     __bind_key__ = 'user_db'
     id = db.Column(db.String(100), primary_key=True)
     calendar_id = db.Column(db.String(150))
@@ -16,14 +16,14 @@ class Events(Base):
     start_time = db.Column(db.TIMESTAMP)
     end_time = db.Column(db.TIMESTAMP)
     description = db.Column(db.String(5000))
-    event_attendees = relationship("EventAttendees", back_populates="event")
+    calendar_event_attendees = relationship("CalendarEventAttendees", back_populates="calendar_event")
 
 
-class EventAttendees(Base):
-    __tablename__ = 'event_attendees'
+class CalendarEventAttendees(Base):
+    __tablename__ = 'calendar_event_attendees'
     __bind_key__ = 'user_db'
-    id = db.Column(db.Integer, primary_key=True)  # Auto increment should work automatically
-    event_id = db.Column(db.String(100), db.ForeignKey('events.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(100), db.ForeignKey('calendar_events.id'))
     email = db.Column(db.String(200))
     working_hours_start_time = db.Column(db.TIME)
     working_hours_end_time = db.Column(db.TIME)
@@ -31,4 +31,4 @@ class EventAttendees(Base):
     response_status = db.Column(db.String(20))
     is_organizer = db.Column(db.BOOLEAN)
     is_optional = db.Column(db.BOOLEAN)
-    event = relationship("Events", back_populates="event_attendees")
+    calendar_event = relationship("CalendarEvents", back_populates="calendar_event_attendees")
