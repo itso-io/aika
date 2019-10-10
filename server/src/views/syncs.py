@@ -4,8 +4,10 @@ from flask import Blueprint, session, request
 from utils.app import jsonify, app
 from utils.tasks import add_task
 
+
 syncs = Blueprint('syncs', __name__)
 
+CALENDAR_SYNC_HANDLER_URL = '/tasks/calendar_sync'
 
 @syncs.route('/api/syncs/<int:user_id>')
 def get_sync():
@@ -30,19 +32,16 @@ def configure_sync():
     database_id = data['database_id']
     sync_type = data['sync_type'] or 'google_calendar'
     synced_ids = data['synced_ids']
-    
-    add_task()
+
+    add_task(request, CALENDAR_SYNC_HANDLER_URL)
     return jsonify(data)
 
 
-@syncs.route('/tasks/calendar_sync')
+@syncs.route(CALENDAR_SYNC_HANDLER_URL)
 def task_calendar_sync():
-    for key, val in app.config.items():
-        print(key, val)
     print("Start sleep")
-    time.sleep(20)
+    time.sleep(5)
     print("End sleep sleep")
     return jsonify({
         "DONE": True
     })
-
