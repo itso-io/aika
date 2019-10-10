@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { Map, Set, List, fromJS, OrderedMap } from 'immutable';
+import { Map } from 'immutable';
 
 
 const availableCalendars = state => state.get('availableCalendars');

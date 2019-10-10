@@ -12,7 +12,7 @@ const SignInButton = () => (
           Welcome to Aika! To get started, sign in with Google and authorize access to your Google Calendar.
         </p>
         <a href={signinUrl}>
-          <img src="/google_signin.png" width="250" />
+          <img alt="Google signin" src="/images/google_signin.png" width="250" />
         </a>
       </div>
     </Container>
