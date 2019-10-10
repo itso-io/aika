@@ -1,10 +1,9 @@
-
 import os
 import logging
-import json
 
 from flask_sqlalchemy import SQLAlchemy as FlaskSQLAlchemy
 from flask_migrate import Migrate
+import jinja2
 from sqlalchemy.exc import ProgrammingError
 
 from models.base import db
@@ -15,6 +14,11 @@ from utils.logging import set_logging
 from utils.config import set_config, load_customer_db_config
 from utils.database import get_all_user_db_urls
 from views import blueprints
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static')),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
 
 set_logging(app)
 set_config(app)
@@ -30,8 +34,12 @@ with app.app_context():
 
 
 @app.route('/')
-def hello():
-    return 'Hello World!'
+def root():
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+
+    return template.render(
+        {'app_version_id': os.environ.get('GAE_VERSION', 'local')}
+    )
 
 
 for blueprint in blueprints:
