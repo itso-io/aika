@@ -1,5 +1,4 @@
-
-from flask import request, Blueprint, json
+from flask import request, Blueprint, json, jsonify, session
 import pymysql
 
 # from utils.database import new_alchemy_encoder
@@ -25,7 +24,15 @@ def create_user():
 @user.route('/api/get-user')
 def get_user():
     email = request.args.get('email')
+
     try:
         return jsonify(controller_get_user(email))
     except APIError as err:
         return err.as_response()
+
+
+@user.route('/api/users/me')
+def get_current_user():
+    current_user_email = session.get('user_email')
+
+    return jsonify(None if not current_user_email else {'email': current_user_email})
