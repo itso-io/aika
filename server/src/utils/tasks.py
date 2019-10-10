@@ -24,7 +24,7 @@ def create_task(req, relative_url, data):
         project = os.getenv('GOOGLE_CLOUD_PROJECT')
         queue = app.config['CLOUD_TASK_QUEUE']
         location = 'us-central1'
-        payload = json.dump(data)
+        payload = json.dumps(data)
 
         parent = client.queue_path(project, location, queue)
 
