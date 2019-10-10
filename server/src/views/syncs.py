@@ -2,7 +2,7 @@ import time
 
 from flask import Blueprint, session, request
 from utils.app import jsonify, app
-from utils.tasks import add_task
+from utils.tasks import create_task
 
 
 syncs = Blueprint('syncs', __name__)
@@ -33,12 +33,17 @@ def configure_sync():
     sync_type = data['sync_type'] or 'google_calendar'
     synced_ids = data['synced_ids']
 
-    add_task(request, CALENDAR_SYNC_HANDLER_URL)
+    create_task(request, CALENDAR_SYNC_HANDLER_URL, {
+        "food": "burger"
+    })
     return jsonify(data)
 
 
-@syncs.route(CALENDAR_SYNC_HANDLER_URL)
+@syncs.route(CALENDAR_SYNC_HANDLER_URL, methods=['POST'])
 def task_calendar_sync():
+    print("Body:")
+    print(request.data)
+
     print("Start sleep")
     time.sleep(5)
     print("End sleep sleep")
