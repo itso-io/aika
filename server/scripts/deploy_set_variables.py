@@ -16,7 +16,6 @@ try:
 except Exception:
     pass
 
-
 load_dotenv()
 
 dictConfig({
