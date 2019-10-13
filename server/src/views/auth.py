@@ -1,5 +1,5 @@
 from flask import Blueprint, session, render_template, abort, redirect, request, url_for, jsonify
-from flask_login import login_user
+from flask_login import login_user, login_required, current_user
 import google_auth_oauthlib.flow
 import jwt
 
@@ -94,16 +94,16 @@ def auth_callback():
     # refresh token only provided on initial auth
     if flow.credentials.refresh_token:
         api_credentials.store_user_api_credentials(
-            session['user_email'], flow.credentials)
+            user.id, flow.credentials)
 
     return redirect('/database')
 
 
 @auth.route('/auth/google/check')
+@login_required
 def auth_check():
     # See https://developers.google.com/calendar/quickstart/python
-    calendar_client = api_credentials.get_calendar_api_client(
-        session['user_email'])
+    calendar_client = api_credentials.get_calendar_api_client(current_user.id)
 
     events_result = calendar_client.events().list(calendarId='primary',
                                                   maxResults=10,

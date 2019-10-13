@@ -1,4 +1,5 @@
 from flask import Blueprint, session, request, jsonify
+from flask_login import login_required, current_user
 
 from data.api_credentials import get_calendar_api_client
 
@@ -30,8 +31,9 @@ def _is_relevant_calendar(calendar_id, user_email):
 
 
 @calendars.route('/api/calendars')
+@login_required
 def get_calendars():
-  cal_client = get_calendar_api_client(session['user_email'])
+  cal_client = get_calendar_api_client(current_user.id)
 
   calendars = []
   page_token = None
@@ -40,7 +42,7 @@ def get_calendars():
     calendars.extend([{'id': entry['id'],
                        'summary': entry['summary']}
                       for entry in calendar_list['items']
-                      if _is_relevant_calendar(entry['id'], session['user_email'])])
+                      if _is_relevant_calendar(entry['id'], current_user.email)])
     page_token = calendar_list.get('nextPageToken')
     if not page_token:
       break
