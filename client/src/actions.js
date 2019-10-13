@@ -40,3 +40,35 @@ export const selectCalendar = (calendarId, selected) => ({
   calendarId,
   selected
 });
+
+
+export const updateSyncSettings = () => (dispatch, getState) => {
+  axios.post('/api/settings/mine', {
+      synced_calendars: getState().get('syncedCalendars').toArray()
+    })
+    .then(function (response) {
+      dispatch(receiveSyncConfig(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+
+const receiveSyncConfig = (syncConfig) => ({
+  type: 'UPDATE_SYNC_SETTINGS',
+  syncConfig
+});
+
+
+export const fetchSyncConfig = () => (dispatch, getState) => {
+  axios.get('/api/settings/mine')
+    .then(function (response) {
+      if (!response.data) return;
+
+      dispatch(receiveSyncConfig(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
