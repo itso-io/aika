@@ -18,6 +18,33 @@ const mapStateToProps = (state) => ({
 });
 
 
+class SyncProgressIndicator extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { dotCount: 0 };
+  }
+
+  time() {
+    const dotCount = this.state.dotCount === 3 ? 0 : this.state.dotCount + 1;
+
+    this.setState({ dotCount });
+
+    setTimeout(this.time.bind(this), 500);
+  }
+
+  componentDidMount() {
+    this.time();
+  }
+
+  render() {
+    return (
+      <div>{`Syncing${[...Array(this.state.dotCount).keys()].map(k => '.').join('')}`}</div>
+    );
+  }
+}
+
+
 class CalendarsSelector extends React.Component {
   handleChange = calendarId => event => {
     this.props.selectCalendar(calendarId, event.target.checked);
@@ -50,11 +77,16 @@ class CalendarsSelector extends React.Component {
             <Button
                 variant="contained"
                 color="primary"
-                onClick={() => alert('yo')}
+                onClick={this.props.updateSyncSettings}
             >
               Start sync
             </Button>
           </FormControl>
+          <div style={{marginTop: '20px'}} />
+          {
+            this.props.syncStatus !== 'syncing' ? null :
+                <SyncProgressIndicator />
+          }
         </div>
     );
   }

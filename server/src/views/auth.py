@@ -1,8 +1,11 @@
 from flask import Blueprint, session, render_template, abort, redirect, request, url_for, jsonify
+from flask_login import login_user
 import google_auth_oauthlib.flow
 import jwt
 
 from data import api_credentials
+from models.app_main import User as UserModel
+from models.base import db
 from utils.common import get_file_full_path
 
 
@@ -12,6 +15,25 @@ REQUIRED_SCOPES = ['openid',
                    'https://www.googleapis.com/auth/calendar.readonly']
 
 auth = Blueprint('auth', __name__)
+
+
+class User:
+  def __init__(self, id, email):
+    self.id = id
+    self.email = email
+
+    self.is_authenticated = True
+    self.is_active = True
+    self.is_anonymous = False
+
+  def get_id(self):
+    return self.id
+
+
+def get_user_by_id(user_id):
+  user = UserModel.query.get(int(user_id))
+
+  return User(user.id, user.email)
 
 
 def credentials_to_dict(credentials):
@@ -55,14 +77,22 @@ def auth_callback():
     # this token came from Google, so don't worry aboue re-verifying its signature in this context
     id_data = jwt.decode(flow.credentials.id_token, verify=False)
 
-    session['user_email'] = None if not id_data['email_verified'] else id_data['email']
+    user_email = None if not id_data['email_verified'] else id_data['email']
 
-    print("Auth details:")
-    print(session['user_email'])
-    print(flow.credentials.refresh_token)
+    if not user_email:
+      return redirect('/')
+
+    user = UserModel.query.filter_by(email=user_email).first()
+
+    if not user:
+      user = UserModel(email=user_email)
+      db.session.add(user)
+      db.session.commit()
+
+    login_user(User(user.id, user_email))
 
     # refresh token only provided on initial auth
-    if session['user_email'] and flow.credentials.refresh_token:
+    if flow.credentials.refresh_token:
         api_credentials.store_user_api_credentials(
             session['user_email'], flow.credentials)
 

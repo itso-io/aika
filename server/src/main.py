@@ -1,6 +1,7 @@
 import os
 import logging
 
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy as FlaskSQLAlchemy
 from flask_migrate import Migrate
 import jinja2
@@ -15,6 +16,7 @@ from utils.logging import set_logging
 from utils.config import set_config, load_customer_db_config
 from utils.database import get_all_user_db_urls
 from views import blueprints
+from views.auth import get_user_by_id
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static')),
@@ -44,6 +46,15 @@ with app.app_context():
     except ProgrammingError:
         logging.warn('The tables aren\'t defined yet')
     migrate = Migrate(app, db)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+  return get_user_by_id(user_id)
 
 
 @app.route("/", defaults={"path": ""})
