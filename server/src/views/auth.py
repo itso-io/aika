@@ -6,6 +6,7 @@ import jwt
 from data import api_credentials
 from models.app_main import User as UserModel
 from models.base import db
+from utils import env
 from utils.common import get_file_full_path
 
 
@@ -96,7 +97,7 @@ def auth_callback():
         api_credentials.store_user_api_credentials(
             user.id, flow.credentials)
 
-    return redirect('/database')
+    return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 
 
 @auth.route('/auth/google/check')
