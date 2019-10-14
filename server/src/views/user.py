@@ -1,4 +1,5 @@
 from flask import request, Blueprint, json, jsonify, session
+from flask_login import login_required, current_user
 import pymysql
 
 # from utils.database import new_alchemy_encoder
@@ -40,7 +41,6 @@ def get_user_email(email):
 
 
 @user.route('/api/users/me')
+@login_required
 def get_current_user():
-    current_user_email = session.get('user_email')
-
-    return jsonify(None if not current_user_email else {'email': current_user_email})
+    return jsonify(None if not current_user else {'email': current_user.email})

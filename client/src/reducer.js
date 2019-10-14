@@ -1,4 +1,4 @@
-import { Map, fromJS } from 'immutable';
+import { Map, Set, fromJS } from 'immutable';
 
 export default (state = Map(), action) => {
   switch (action.type) {
@@ -16,6 +16,11 @@ export default (state = Map(), action) => {
           'syncedCalendars',
           cals => cals[action.selected ? 'add' : 'delete'](action.calendarId)
       );
+
+    case 'UPDATE_SYNC_SETTINGS':
+      return state
+          .set('syncedCalendars', Set(action.syncConfig.synced_calendars))
+
     default:
       return state;
   }
