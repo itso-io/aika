@@ -2,6 +2,7 @@ from flask import Blueprint, session, render_template, abort, redirect, request,
 from flask_login import login_user, login_required, current_user
 import google_auth_oauthlib.flow
 import jwt
+import pickle
 
 from data import api_credentials
 from models.app_main import User as UserModel
@@ -23,10 +24,6 @@ class User:
     self.id = id
     self.email = email
 
-    self.is_authenticated = True
-    self.is_active = True
-    self.is_anonymous = False
-
   def get_id(self):
     return self.id
 
@@ -34,7 +31,7 @@ class User:
 def get_user_by_id(user_id):
   user = UserModel.query.get(int(user_id))
 
-  return User(user.id, user.email)
+  return user
 
 
 def credentials_to_dict(credentials):
@@ -90,12 +87,14 @@ def auth_callback():
       db.session.add(user)
       db.session.commit()
 
-    login_user(User(user.id, user_email))
+    login_user(user)
 
     # refresh token only provided on initial auth
     if flow.credentials.refresh_token:
-        api_credentials.store_user_api_credentials(
-            user.id, flow.credentials)
+        user.google_credentials = pickle.dumps(flow.credentials)
+        db.session.add(user)
+        db.session.commit()
+        
 
     return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 

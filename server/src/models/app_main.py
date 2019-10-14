@@ -4,10 +4,18 @@ from models.base import Base, db
 
 
 class User(Base):
+    is_authenticated = True
+    is_active = True
+    is_anonymous = False
+
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), nullable=False, unique=True)
+    google_credentials = db.Column(db.LargeBinary)
     databases = relationship("UserDatabase", back_populates="user")
+
+    def get_id(self):
+        return self.id
 
 
 class UserDatabase(Base):

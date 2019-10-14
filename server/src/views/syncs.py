@@ -1,5 +1,7 @@
 import time
 
+
+from flask_login import login_required, current_user
 from flask import Blueprint, session, request
 from utils.app import jsonify, app
 from utils.tasks import create_task
@@ -8,35 +10,25 @@ from data.api_credentials import get_calendar_api_client
 
 syncs = Blueprint('syncs', __name__)
 
-CALENDAR_SYNC_HANDLER_URL = '/tasks/calendar_sync'
-
-@syncs.route('/api/syncs/<int:user_id>')
-def get_sync():
-    return jsonify({
-        'status': 'syncing',
-        'synced_calendars': [
-            'jon@itso.io',
-            'lucas@itso.io'
-        ]
-    })
-
+CALENDAR_SYNC_HANDLER_URL = '/api/syncs/tasks/calendar_sync'
 
 @syncs.route('/api/syncs/')
+@login_required
 def list_syncs():
     return jsonify([])
 
 
 @syncs.route('/api/syncs', methods=['POST'])
+@login_required
 def configure_sync():
+    user_id = current_user.id
     data = request.json
-    email = session['user_email'] if 'user_email' in session else 'lucas@itso.io'
     print(data)
     sync_type = data['sync_type'] or 'google_calendar'
     synced_ids = data['synced_ids']
 
     create_task(request, CALENDAR_SYNC_HANDLER_URL, {
-        "food": "burger",
-        "email": email,
+        "user_id": user_id,
         "calendars": synced_ids
     })
     return jsonify(data)
@@ -45,25 +37,15 @@ def configure_sync():
 @syncs.route(CALENDAR_SYNC_HANDLER_URL, methods=['POST'])
 def task_calendar_sync():
     print("Body:")
-    data = request.json
-    print(data)
-    email = data['email']
-    calendars = [email]  # data['calendars']
 
-    cal_client = get_calendar_api_client(email)
+
+    data = request.json
+    user_id = data['user_id']
+    calendars = data['calendars']
+    print('et')
+    cal_client = get_calendar_api_client(user_id)
     print('et')
 
-    for cal in calendars:
-        events_result = cal_client.events().list(calendarId=cal,
-                                            maxResults=10, singleEvents=True,
-                                            orderBy='startTime').execute()
-        events = events_result.get('items', [])
-
-        if not events:
-            print('No upcoming events found.')
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
 
 
     print("Start sleep")

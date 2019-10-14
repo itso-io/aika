@@ -5,33 +5,18 @@ from google.cloud import datastore
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
+from models.app_main import User
 
 datastore_client = datastore.Client()
 
 
-def store_user_api_credentials(user_id, credentials):
-    entity = datastore.Entity(key=datastore_client.key('APICredentials'),
-                              exclude_from_indexes=['credentials'])
-    entity.update({
-        'created': datetime.datetime.utcnow(),
-        'user': user_id,
-        'credentials': pickle.dumps(credentials)
-    })
-
-    datastore_client.put(entity)
-
-
 def get_user_api_credentials(user_id):
-    query = datastore_client.query(kind='APICredentials')
-    query.add_filter('user', '=', user_id)
-    query.order = ['-created']
+    user = User.query.get(int(user_id))
 
-    credentials = list(query.fetch(limit=1))
-
-    if not credentials:
+    if not user.google_credentials:
         return None
 
-    return pickle.loads(credentials[0]['credentials'])
+    return pickle.loads(user.google_credentials)
 
 
 def get_calendar_api_client(user_id):
