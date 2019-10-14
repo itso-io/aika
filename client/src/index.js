@@ -8,7 +8,12 @@ import reducer from './reducer';
 import './index.css';
 import App from './App';
 import INIT_STATE from './init_state';
-import { fetchUserInfo, fetchSyncConfig, fetchAvailableCalendars } from './actions';
+import {
+  fetchUserInfo,
+  fetchSyncConfig,
+  fetchAvailableCalendars,
+  fetchDatabaseDetails,
+} from './actions';
 import * as serviceWorker from './serviceWorker';
 
 let middleware = [thunkMiddleware];
@@ -25,6 +30,7 @@ store.dispatch({
 store.dispatch(fetchUserInfo());
 store.dispatch(fetchSyncConfig());
 store.dispatch(fetchAvailableCalendars());
+store.dispatch(fetchDatabaseDetails());
 
 ReactDOM.render(
   <Provider store={store}>

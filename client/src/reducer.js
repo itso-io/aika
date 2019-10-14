@@ -18,8 +18,10 @@ export default (state = Map(), action) => {
       );
 
     case 'UPDATE_SYNC_SETTINGS':
-      return state
-          .set('syncedCalendars', Set(action.syncConfig.synced_calendars))
+      return state.set('syncedCalendars', Set(action.syncConfig.synced_calendars));
+
+    case 'SET_DATABASE_DETAILS':
+      return state.set('databaseDetails', fromJS(action.databaseDetails));
 
     default:
       return state;

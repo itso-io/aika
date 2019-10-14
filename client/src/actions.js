@@ -72,3 +72,22 @@ export const fetchSyncConfig = () => (dispatch, getState) => {
       console.log(error);
     });
 };
+
+
+const receiveDatabaseDetails = (databaseDetails) => ({
+  type: 'SET_DATABASE_DETAILS',
+  databaseDetails
+});
+
+
+export const fetchDatabaseDetails = () => (dispatch, getState) => {
+  axios.get('/api/databases/mine')
+    .then(function (response) {
+      if (!response.data) return;
+
+      dispatch(receiveDatabaseDetails(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};

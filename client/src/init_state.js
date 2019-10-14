@@ -3,5 +3,6 @@ import { Set } from 'immutable';
 export default {
   userInfo: undefined,
   availableCalendars: [],
-  syncedCalendars: Set()
+  syncedCalendars: Set(),
+  databaseDetails: undefined,
 }
