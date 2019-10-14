@@ -97,7 +97,7 @@ def auth_callback():
         api_credentials.store_user_api_credentials(
             user.id, flow.credentials)
 
-    return redirect('%s/database' % ('http://localhost:3000') if env.is_local() else '')
+    return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 
 
 @auth.route('/auth/google/check')
