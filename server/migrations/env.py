@@ -175,12 +175,12 @@ def run_migrations_online():
         for rec in engines.values():
             rec['connection'].close()
 
+    # TODO MAKE SURE THIS ONLY COMMITS IF EVERYTHING SUCCEEDS
     for bind_name, databases in multiple_databases.items():
         bind_config = context.config.get_section(bind_name)
         for database_name, database_url in databases.items():
-            print(database_name, database_url)
             # try:
-            logging.info(f'Starting to update database {database_name}')
+            print(f'Starting to update database {database_name}')
             custom_config = {
                 'here': bind_config['here'],
                 'sqlalchemy.url': database_url
@@ -213,20 +213,7 @@ def run_migrations_online():
                 rec['transaction'].prepare()
 
             rec['transaction'].commit()
-
-            # except Exception as err:
-            #     logging.warn(f'Failed to update database {database_name}')
-            #     for rec in engines.values():
-            #         rec['transaction'].rollback()
-            #     print(err)
-            #     raise
-            # finally:
             rec['connection'].close()
-            # engine = engine_from_config(
-            #     config.get_section(config.config_ini_section),
-            #     prefix='sqlalchemy.',
-            #     poolclass=pool.NullPool,
-            # )
 
 
 if context.is_offline_mode():

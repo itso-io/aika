@@ -14,7 +14,8 @@ from utils.common import get_file_full_path
 CLIENT_SECRETS_FILE = get_file_full_path('google_client_secret.json')
 REQUIRED_SCOPES = ['openid',
                    'https://www.googleapis.com/auth/userinfo.email',
-                   'https://www.googleapis.com/auth/calendar.readonly']
+                   'https://www.googleapis.com/auth/calendar.readonly',
+                   'https://www.googleapis.com/auth/admin.directory.user.readonly']
 
 auth = Blueprint('auth', __name__)
 
