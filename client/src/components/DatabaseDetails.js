@@ -84,7 +84,7 @@ class PasswordCell extends React.Component {
     return (
         <TableCell
             align="right"
-            style={{display: 'flex', alignItems: 'center'}}
+            style={{display: 'flex', alignItems: 'center', 'font-family': '"Courier New", Courier, monospace'}}
         >
           {showPassword ?
               <VisibilityOff
@@ -144,7 +144,7 @@ const ConnectionDetails = ({ details }) => {
                     {row.label}
                   </TableCell>
                   {row.label !== 'Password' ?
-                      <TableCell align="right">
+                      <TableCell align="right" style={{'font-family': '"Courier New", Courier, monospace'}}>
                         <ClickToCopyText text={row.value} />
                       </TableCell>
                       : <PasswordCell password={row.value} />
