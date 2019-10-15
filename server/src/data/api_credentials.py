@@ -29,3 +29,14 @@ def get_calendar_api_client(user_id):
         credentials.refresh(Request())
 
     return build('calendar', 'v3', credentials=credentials)
+
+def get_user_api_client(user_id):
+    credentials = get_user_api_credentials(user_id)
+
+    if not credentials:
+        return None
+
+    if credentials.expired:
+        credentials.refresh(Request())
+
+    return build('admin', 'directory_v1', credentials=credentials)

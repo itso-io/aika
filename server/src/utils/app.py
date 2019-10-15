@@ -1,4 +1,5 @@
 from os import getenv
+import collections
 
 from flask import Flask, json
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -12,7 +13,7 @@ class APIError(Exception):
     pass
 
 
-def new_alchemy_encoder(revisit_self=False):
+def new_alchemy_encoder(fields_to_expand=[]):
     _visited_objs = []
 
     class AlchemyEncoder(json.JSONEncoder):
@@ -32,12 +33,22 @@ def new_alchemy_encoder(revisit_self=False):
 
                 # an SQLAlchemy class
                 fields = {}
-
                 # TODO filter out non supported objects like functions
                 for field in [x for x in dir(obj) if self.field_condition(x)]:
-                    fields[field] = obj.__getattribute__(field)
+                    val = obj.__getattribute__(field)
+                    # is this field another SQLalchemy object, or a list of SQLalchemy objects?
+                    if isinstance(val.__class__, DeclarativeMeta) or (isinstance(val, list) and len(val) > 0 and isinstance(val[0].__class__, DeclarativeMeta)):
+                        # unless we're expanding this field, stop here
+                        if field not in fields_to_expand:
+                            # not expanding this field: set it to None and continue
+                            fields[field] = None
+                            continue
+                    fields[field] = val
                 # a json-encodable dict
                 return fields
+
+            if isinstance(obj.__class__, collections.Callable):
+                return None
 
             return json.JSONEncoder.default(self, obj)
 

@@ -10,7 +10,6 @@ from flask_sqlalchemy import BaseQuery
 
 # From app
 from models.base import db
-from models.app_main import UserDatabase
 
 
 def get_db_url(user_database):

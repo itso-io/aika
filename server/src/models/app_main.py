@@ -1,7 +1,10 @@
+from json import loads
 from sqlalchemy.orm import relationship
 
 from models.base import Base, db
 
+from utils.app import dump_json
+from utils.database import get_db_url
 
 class User(Base):
     is_authenticated = True
@@ -30,6 +33,11 @@ class UserDatabase(Base):
     database = db.Column(db.String(128))
     query = db.Column(db.String(256))
     user = relationship("User", back_populates="databases")
+
+    def get_url(self):
+        data = dump_json(self)
+
+        return get_db_url(loads(data))
 
 
 class Settings(Base):

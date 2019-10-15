@@ -1,7 +1,7 @@
 from flask import Blueprint, session, request, jsonify
 from flask_login import login_required, current_user
 
-from data.api_credentials import get_calendar_api_client
+from data.api_credentials import get_calendar_api_client, get_user_api_client
 
 calendars = Blueprint('calendars', __name__)
 
@@ -37,13 +37,44 @@ def get_calendars():
 
   calendars = []
   page_token = None
+  ids = []
   while True:
     calendar_list = cal_client.calendarList().list(pageToken=page_token).execute()
-    calendars.extend([{'id': entry['id'],
-                       'summary': entry['summary']}
-                      for entry in calendar_list['items']
-                      if _is_relevant_calendar(entry['id'], current_user.email)])
+
+    for entry in calendar_list['items']:
+      ids.append(entry['id'])
+      if _is_relevant_calendar(entry['id'], current_user.email):
+        calendars.append({
+                           'id': entry['id'],
+                           'summary': entry['summary'],
+                           'added_to_calendar': True
+                        })
+
     page_token = calendar_list.get('nextPageToken')
+    if not page_token:
+      break
+
+  user_client = get_user_api_client(current_user.id)
+
+  # TODO is this the best way to get the domain or customer ID for a user?
+  domain = current_user.email[current_user.email.find("@") + 1 :]
+
+  while True:
+    user_list = user_client.users().list(pageToken=page_token, viewType='domain_public', domain=domain).execute()
+
+    for entry in user_list.get('users', []):
+      user_id = entry['primaryEmail']
+      if user_id not in ids:
+        ids.append(user_id)
+        if _is_relevant_calendar(user_id, current_user.email):
+          calendars.append({
+                            'id': user_id,
+                            # As this will be the primary calendar of the user, the summary will be the user_id too
+                            'summary': user_id,
+                            'added_to_calendar': False
+                          })
+
+    page_token = user_list.get('nextPageToken')
     if not page_token:
       break
 
