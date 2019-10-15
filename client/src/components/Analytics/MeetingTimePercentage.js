@@ -1,6 +1,5 @@
 import axios from 'axios';
-import React, { Component } from "react";
-import { render } from "react-dom";
+import React from "react";
 import Chart from "chart.js";
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -48,7 +47,7 @@ class PeriodSelector extends React.Component {
       <FormControl>
         <InputLabel htmlFor="select-period">Per</InputLabel>
         <Select
-          value={this.state.selected}
+          value={selected}
           onChange={this.handleChange}
           input={<Input id="select-period" style={{minWidth: '100px'}} />}
         >
@@ -94,7 +93,7 @@ class CalendarSelector extends React.Component {
           <InputLabel htmlFor="select-multiple-cals">Calendars</InputLabel>
           <Select
             multiple
-            value={this.state.selected}
+            value={selected}
             onChange={this.handleChange}
             onClose={this.handleClose}
             input={<Input id="select-multiple-cals" style={{minWidth: '100px'}} />}
@@ -129,10 +128,16 @@ class Controls extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (_.isEqual(prevState, this.state)) return;
+
+    this.props.onChange(this.state);
+  }
+
   onChange = (setting, value) => {
     if (this.state[setting] === undefined) throw Error(`Unexpected setting "${setting}"`)
 
-    this.setState({[setting]: value}, () => this.props.onChange(this.state));
+    this.setState({[setting]: value});
   };
 
   render() {
@@ -169,7 +174,7 @@ options.scales.yAxes[0].ticks = {
   callback: function (value, index, values) {
     return `${value}%`;
   }
-}
+};
 options.scales.yAxes[0].gridLines.display = true;
 
 
@@ -216,7 +221,7 @@ export default class MeetingTimePercentage extends React.Component {
 
     var ctx = document.getElementById('percentageChart').getContext('2d');
 
-    var myChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'bar',
         data,
         options
