@@ -13,3 +13,12 @@ export const syncStatusPerCalendar = createSelector(
       return perCalendar.set(calendar.get('id'), syncedCalendars.includes(calendar.get('id')));
     }, Map())
 );
+
+
+export const syncedCalendarDetails = createSelector(
+    availableCalendars,
+    syncedCalendars,
+    (availableCalendars, syncedCalendars) => availableCalendars.filter(
+        (cal) => syncedCalendars.includes(cal.get('id'))
+    )
+);
