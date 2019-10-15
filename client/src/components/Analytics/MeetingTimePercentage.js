@@ -184,11 +184,11 @@ export default class MeetingTimePercentage extends React.Component {
     super(props);
 
     this.state = {
+      chart: null,
       rawData: null,
       latestCompletedQuery: null,
       settings: {
         calendarIds: [],
-
       },
     };
   }
@@ -219,13 +219,22 @@ export default class MeetingTimePercentage extends React.Component {
   handleQueryCompleted() {
     const data = this.getFormattedData();
 
-    var ctx = document.getElementById('percentageChart').getContext('2d');
+    if (this.state.chart) {
+      const { chart } = this.state;
 
-    new Chart(ctx, {
+      chart.data = data;
+      chart.update();
+    } else {
+      var ctx = document.getElementById('percentageChart').getContext('2d');
+
+      const chart = new Chart(ctx, {
         type: 'bar',
         data,
         options
-    });
+      });
+
+      this.setState({chart})
+    }
   }
 
   handleSettingsChange(newSettings) {
