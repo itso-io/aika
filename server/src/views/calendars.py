@@ -59,7 +59,9 @@ def get_calendars():
   # TODO is this the best way to get the domain or customer ID for a user?
   domain = current_user.email[current_user.email.find("@") + 1 :]
 
-  while True:
+  get_domain_cals = domain != 'gmail.com'
+
+  while get_domain_cals:
     user_list = user_client.users().list(pageToken=page_token, viewType='domain_public', domain=domain).execute()
 
     for entry in user_list.get('users', []):
