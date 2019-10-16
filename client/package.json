@@ -2,6 +2,8 @@
   "name": "aika-client",
   "version": "0.1.0",
   "private": true,
+  "//": "`homepage` attribute allows us to serve all build assets from the /assets/... path. See https://create-react-app.dev/docs/deployment/#building-for-relative-paths.",
+  "homepage": "/assets",
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.5.1",
