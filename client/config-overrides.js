@@ -4,22 +4,11 @@ const {
 } = require("customize-cra");
 
 module.exports = {
-  webpack: override(
-    (config) => {
-      config.optimization = config.optimization || {};
-      config.optimization.splitChunks = {
-         cacheGroups: {
-            default: false
-         }
-      };
-      config.optimization.runtimeChunk = false;
-
-      config.output = config.output || {};
-      config.output.filename = 'bundle.js';
-
-      return config;
-    }
-  ),
+  // webpack: override(
+  //   (config) => {
+  //     return config;
+  //   }
+  // ),
   devServer: overrideDevServer(
     (config) => {
       config.proxy = {
@@ -31,8 +20,6 @@ module.exports = {
           changeOrigin: true
         }
       };
-
-      config.contentBase = __dirname + '/../server/src/static';
 
       return config;
     }
