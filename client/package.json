@@ -22,8 +22,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "copy-bundle": "mkdir -p ../server/src/static/scripts && cp build/bundle.js ../server/src/static/scripts/",
-    "build": "react-app-rewired build && yarn copy-bundle",
+    "copy-build": "rm -rf ../server/src/build && cp -r build/ ../server/src/build",
+    "build": "react-app-rewired build && yarn copy-build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

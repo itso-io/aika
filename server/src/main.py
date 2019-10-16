@@ -19,7 +19,7 @@ from views import blueprints
 from views.auth import get_user_by_id
 
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static')),
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'build')),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
