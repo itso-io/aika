@@ -12,7 +12,6 @@ import Nav from './components/Nav';
 import SignInButton from './components/SignIn';
 
 export default function App() {
-  console.log('test');
   return (
     <Router>
       <React.Fragment>
