@@ -28,7 +28,7 @@ def get_calendar_api_client(user_id):
     if credentials.expired:
         credentials.refresh(Request())
 
-    return build('calendar', 'v3', credentials=credentials)
+    return build('calendar', 'v3', credentials=credentials, cache_discovery=False)
 
 
 def get_user_api_client(user_id):
@@ -40,4 +40,4 @@ def get_user_api_client(user_id):
     if credentials.expired:
         credentials.refresh(Request())
 
-    return build('admin', 'directory_v1', credentials=credentials, cache_discovery=False)
+    return build('admin', 'directory_v1', cache_discovery=False, credentials=credentials)
