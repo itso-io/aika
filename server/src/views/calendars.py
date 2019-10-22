@@ -33,7 +33,9 @@ def _is_relevant_calendar(calendar_id, user_email):
 @calendars.route('/api/calendars')
 @login_required
 def get_calendars():
-  cal_client = get_calendar_api_client(current_user.id)
+  print(current_user.id)
+  cal_client = get_calendar_api_client(current_user.id
+  )
 
   calendars = []
   page_token = None
@@ -47,7 +49,8 @@ def get_calendars():
         calendars.append({
                            'id': entry['id'],
                            'summary': entry['summary'],
-                           'added_to_calendar': True
+                           'added_to_calendar': True,
+                           'user_calendar': entry['id'] == entry['summary']
                         })
 
     page_token = calendar_list.get('nextPageToken')
@@ -59,7 +62,9 @@ def get_calendars():
   # TODO is this the best way to get the domain or customer ID for a user?
   domain = current_user.email[current_user.email.find("@") + 1 :]
 
-  while True:
+  get_domain_cals = domain != 'gmail.com'
+
+  while get_domain_cals:
     user_list = user_client.users().list(pageToken=page_token, viewType='domain_public', domain=domain).execute()
 
     for entry in user_list.get('users', []):
@@ -71,7 +76,8 @@ def get_calendars():
                             'id': user_id,
                             # As this will be the primary calendar of the user, the summary will be the user_id too
                             'summary': user_id,
-                            'added_to_calendar': False
+                            'added_to_calendar': False,
+                            'user_calendar': True
                           })
 
     page_token = user_list.get('nextPageToken')

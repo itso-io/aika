@@ -2,6 +2,8 @@
   "name": "aika-client",
   "version": "0.1.0",
   "private": true,
+  "//": "`homepage` attribute allows us to serve all build assets from the /assets/... path. See https://create-react-app.dev/docs/deployment/#building-for-relative-paths.",
+  "homepage": "/assets",
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.5.1",
@@ -22,8 +24,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "copy-bundle": "mkdir -p ../server/src/static/scripts && cp build/bundle.js ../server/src/static/scripts/",
-    "build": "react-app-rewired build && yarn copy-bundle",
+    "copy-build": "rm -rf ../server/src/build && cp -r build/ ../server/src/build",
+    "build": "react-app-rewired build && yarn copy-build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

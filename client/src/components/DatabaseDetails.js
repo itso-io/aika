@@ -134,7 +134,7 @@ const ConnectionDetails = ({ details }) => {
   return (
       <div>
         <h4>
-          MySQL Connection Details
+          MySQL connection details
         </h4>
         <Table aria-label="simple table">
           <TableBody>
@@ -247,7 +247,7 @@ class DatabaseDetails extends React.Component {
     return (
         <React.Fragment>
           <CssBaseline />
-          <Container maxWidth="sm">
+          <Container maxWidth="md">
             <div style={{height: '20px'}}></div>
             <p>
               You are signed in as <b>{this.props.userEmail}</b>.

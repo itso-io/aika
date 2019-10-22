@@ -1,4 +1,8 @@
 runtime: python37
+automatic_scaling:
+  min_instances: 1
+inbound_services:
+- warmup
 env_variables:
   FLASK_SECRET_KEY: placeholder
   APP_DB_USER: placeholder
@@ -10,12 +14,15 @@ env_variables:
   CLOUD_SQL_CONNECTION_NAME: placeholder
   CLOUD_TASK_QUEUE: placeholder
 handlers:
+- url: /((privacy|terms))$
+  static_files: static/docs/\1.html
+  upload: static/docs/.*
 - url: /images
   secure: always
-  static_dir: static/images
-- url: /scripts
+  static_dir: build/images
+- url: /assets
   secure: always
-  static_dir: static/scripts
+  static_dir: build
 - url: /.*
   script: auto
   secure: always

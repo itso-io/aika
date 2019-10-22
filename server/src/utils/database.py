@@ -23,7 +23,7 @@ def get_db_url(user_database):
         # query={
         #   'unix_socket': '/cloudsql/{}'.format(user_database['query'])
         # }
-    ))
+    )) + '?charset=utf8mb4'
 
 
 def get_all_user_db_urls(app):

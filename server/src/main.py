@@ -19,7 +19,7 @@ from views import blueprints
 from views.auth import get_user_by_id
 
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'static')),
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'build')),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
@@ -29,13 +29,13 @@ set_config(app)
 db.init_app(app)
 
 if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-    create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    create_database(app.config['SQLALCHEMY_DATABASE_URI'], encoding='utf8mb4')
     logging.error(f'The application database has just been created, the tables'
                   f' still need to be created (run reate_tables_new_db.sh) '
                   f'for the app to work.')
 
 if not database_exists(app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI']):
-    create_database(app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI'])
+    create_database(app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI'], encoding='utf8mb4')
     logging.error(f'The example database has just been created, the tables '
                   f'still need to be created (run reate_tables_new_db.sh) '
                   f'for the app to work.')
@@ -55,6 +55,11 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
   return get_user_by_id(user_id)
+
+
+@app.route('/_ah/warmup')
+def warmup():
+  return '', 200, {}
 
 
 @app.route("/", defaults={"path": ""})
