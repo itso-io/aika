@@ -50,8 +50,14 @@ def auth_init():
 
     flow.redirect_uri = url_for('auth.auth_callback', _external=True)
 
-    authorization_url, state = flow.authorization_url(access_type='offline',
-                                                      include_granted_scopes='true')
+    authorization_url_kwargs = {'access_type': 'offline',
+                                'include_granted_scopes': 'true'}
+
+    if env.is_local():
+      # this simplifies the local development flow where we often want to re-authorize a user
+      authorization_url_kwargs['prompt'] = 'consent'
+
+    authorization_url, state = flow.authorization_url(**authorization_url_kwargs)
 
     session['state'] = state
 
