@@ -10,6 +10,9 @@ env_variables:
   CLOUD_SQL_CONNECTION_NAME: placeholder
   CLOUD_TASK_QUEUE: placeholder
 handlers:
+- url: /((privacy|terms))$
+  static_files: static/docs/\1.html
+  upload: static/docs/.*
 - url: /images
   secure: always
   static_dir: build/images
