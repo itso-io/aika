@@ -40,4 +40,4 @@ def get_user_api_client(user_id):
     if credentials.expired:
         credentials.refresh(Request())
 
-    return build('admin', 'directory_v1', credentials=credentials)
+    return build('admin', 'directory_v1', credentials=credentials, cache_discovery=False)
