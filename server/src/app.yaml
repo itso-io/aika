@@ -1,6 +1,8 @@
 runtime: python37
 automatic_scaling:
   min_instances: 1
+inbound_services:
+- warmup
 env_variables:
   FLASK_SECRET_KEY: placeholder
   APP_DB_USER: placeholder

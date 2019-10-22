@@ -57,6 +57,11 @@ def load_user(user_id):
   return get_user_by_id(user_id)
 
 
+@app.route('/_ah/warmup')
+def warmup():
+  return '', 200, {}
+
+
 @app.route("/", defaults={"path": ""})
 @app.route('/<path:path>')
 def root(path):
