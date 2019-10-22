@@ -247,7 +247,7 @@ class DatabaseDetails extends React.Component {
     return (
         <React.Fragment>
           <CssBaseline />
-          <Container maxWidth="sm">
+          <Container maxWidth="md">
             <div style={{height: '20px'}}></div>
             <p>
               You are signed in as <b>{this.props.userEmail}</b>.

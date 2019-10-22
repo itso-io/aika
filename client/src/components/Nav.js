@@ -51,7 +51,7 @@ class Nav extends React.Component {
     if (this.state.currentPath.length <= 1) return null;
 
     return (
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Tabs
           value={this.state.currentPath}
           onChange={this.handleChange}
