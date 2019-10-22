@@ -9,8 +9,12 @@ from utils.enums import APIErrorTypes
 app = Flask(__name__)
 
 
-class APIError(Exception):
-    pass
+def get_nested(data, *args):
+    if args and data:
+        element = args[0]
+        if element:
+            value = data.get(element)
+            return value if len(args) == 1 else get_nested(value, *args[1:])
 
 
 def new_alchemy_encoder(fields_to_expand=[]):
@@ -55,7 +59,7 @@ def new_alchemy_encoder(fields_to_expand=[]):
     return AlchemyEncoder
 
 
-def dump_json(*args, **kwargs):
+def dump_json(data, fields_to_expand=[]):
     indent = None
     separators = (',', ':')
 
@@ -63,22 +67,14 @@ def dump_json(*args, **kwargs):
         indent = 2
         separators = (', ', ': ')
 
-    if args and kwargs:
-        raise TypeError('jsonify() behavior undefined when passed both args '
-                        'and kwargs')
-    elif len(args) == 1:  # single args are passed directly to dumps()
-        data = args[0]
-    else:
-        data = args or kwargs
-
-    data = json.dumps(data, cls=new_alchemy_encoder(False),
+    data = json.dumps(data, cls=new_alchemy_encoder(fields_to_expand),
                       check_circular=False,
                       indent=indent,
                       separators=separators) + '\n'
     return data
 
 
-def jsonify(*args, **kwargs):
+def jsonify(data, fields_to_expand=[]):
     """This function wraps :func:`dumps` to add a few enhancements that make
     life easier.  It turns the JSON output into a :class:`~flask.Response`
     object with the :mimetype:`application/json` mimetype.  For convenience, it
@@ -95,7 +91,6 @@ def jsonify(*args, **kwargs):
        :func:`dumps`.
     3. Multiple keyword arguments: Converted to a dict before being passed to
        :func:`dumps`.
-    4. Both args and kwargs: Behavior undefined and will throw an exception.
 
     Example usage::
 
@@ -127,7 +122,7 @@ def jsonify(*args, **kwargs):
 
     .. versionadded:: 0.2
     """
-    response_body = dump_json(*args, **kwargs)
+    response_body = dump_json(data, fields_to_expand=fields_to_expand)
 
     return app.response_class(
         response_body,

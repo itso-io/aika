@@ -71,7 +71,6 @@ def initialize_database(user):
     grant_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* ' \
                         f'TO \'{new_db_name}\'@\'%%\';'
 
-    print(grant_perms_query)
     db.engine.execute(grant_perms_query)
 
 
