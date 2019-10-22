@@ -13,7 +13,7 @@ except ImportError:
 from dotenv import load_dotenv
 
 # From app
-from utils.database import get_all_user_db_urls
+from utils.database import get_all_user_db_urls, get_db_url
 
 
 def load_customer_db_config(app):
@@ -35,37 +35,25 @@ def set_config_db(app):
     cloud_sql_connection_name = app.config["CLOUD_SQL_CONNECTION_NAME"]
     example_db_name = app.config["EXAMPLE_DB_NAME"]
 
-    app_url = str(SqlAlchamyURL(
-        drivername='mysql+pymysql',
-        username=db_user,
-        password=db_pass,
-        database=app_db_name,
-        host=db_host,
-        port=db_port,
-        # TODO right now the gcloud sql db is open to connections from all ip
-        # TODO addresses. it would be better to establish a ssh tunnel and use
-        # TODO the  connection name variable to connect instead of the IP
-        # TODO address
-        # query={
-        #   'unix_socket': '/cloudsql/{}'.format(cloud_sql_connection_name)
-        # }
-    ))
+    app_url = get_db_url({
+        'drivername': 'mysql+pymysql',
+        'username': db_user,
+        'password': db_pass,
+        'database': app_db_name,
+        'host': db_host,
+        'port': db_port,
+    })
+
     app.config['SQLALCHEMY_DATABASE_URI'] = app_url
-    example_db_url = str(SqlAlchamyURL(
-        drivername='mysql+pymysql',
-        username=db_user,
-        password=db_pass,
-        database=example_db_name,
-        host=db_host,
-        port=db_port,
-        # TODO right now the gcloud sql db is open to connections from all ip
-        # TODO addresses. it would be better to establish a ssh tunnel and use
-        # TODO the  connection name variable to connect instead of the IP
-        # TODO address
-        #  query={
-        #   'unix_socket': '/cloudsql/{}'.format(cloud_sql_connection_name)
-        # }
-    ))
+    example_db_url = get_db_url({
+        'drivername': 'mysql+pymysql',
+        'username': db_user,
+        'password': db_pass,
+        'database': example_db_name,
+        'host': db_host,
+        'port': db_port,
+    })
+
     app.config['SQLALCHEMY_EXAMPLE_CUSTOMER_DB_URI'] = example_db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_BINDS'] = {
