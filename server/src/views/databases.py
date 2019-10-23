@@ -35,5 +35,5 @@ def get_my_database():
     resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp)
   else:
     print("Cookie domain: " + app.config['METABASE_URL'])
-    resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp, domain=app.config['METABASE_URL'])
+    resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp, domain='.'+app.config['DOMAIN_BASE'])
   return resp
