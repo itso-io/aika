@@ -133,6 +133,9 @@ def putGraph(graph, session):
 
 
 def create_metabase_session(user):
+    global base_url
+    base_url = app.config['METABASE_URL']
+    
     metabase_user = UserMetabase.query.get(user.id)
     authentication_response = authenticateMetabaseUser(metabase_user.email, metabase_user.password)
 
