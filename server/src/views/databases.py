@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 
 from controllers.databases import get_user_database
 from controllers.metabase import create_metabase_session
+from utils.app import app
 
 databases = Blueprint('databases', __name__)
 
@@ -30,6 +31,9 @@ def get_my_database():
 
   exp = datetime.now() + timedelta(days=31)
   print(metabase_session)
-
-  resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp)
+  if 'localhost' in request.host:
+    resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp)
+  else:
+    print("Cookie domain: " + app.config['METABASE_URL'])
+    resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp, domain=app.config['METABASE_URL'])
   return resp
