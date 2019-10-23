@@ -14,6 +14,7 @@ from utils.common import get_file_full_path
 CLIENT_SECRETS_FILE = get_file_full_path('google_client_secret.json')
 REQUIRED_SCOPES = ['openid',
                    'https://www.googleapis.com/auth/userinfo.email',
+                   'https://www.googleapis.com/auth/userinfo.profile',
                    'https://www.googleapis.com/auth/calendar.readonly',
                    'https://www.googleapis.com/auth/admin.directory.user.readonly']
 
@@ -21,18 +22,18 @@ auth = Blueprint('auth', __name__)
 
 
 class User:
-  def __init__(self, id, email):
-    self.id = id
-    self.email = email
+    def __init__(self, id, email):
+        self.id = id
+        self.email = email
 
-  def get_id(self):
-    return self.id
+    def get_id(self):
+        return self.id
 
 
 def get_user_by_id(user_id):
-  user = UserModel.query.get(int(user_id))
+    user = UserModel.query.get(int(user_id))
 
-  return user
+    return user
 
 
 def credentials_to_dict(credentials):
@@ -54,10 +55,11 @@ def auth_init():
                                 'include_granted_scopes': 'true'}
 
     if env.is_local():
-      # this simplifies the local development flow where we often want to re-authorize a user
-      authorization_url_kwargs['prompt'] = 'consent'
+        # this simplifies the local development flow where we often want to re-authorize a user
+        authorization_url_kwargs['prompt'] = 'consent'
 
-    authorization_url, state = flow.authorization_url(**authorization_url_kwargs)
+    authorization_url, state = flow.authorization_url(
+        **authorization_url_kwargs)
 
     session['state'] = state
 
@@ -84,15 +86,30 @@ def auth_callback():
 
     user_email = None if not id_data['email_verified'] else id_data['email']
 
+    print(id_data)
+
     if not user_email:
-      return redirect('/')
+        return redirect('/')
 
     user = UserModel.query.filter_by(email=user_email).first()
 
-    if not user:
-      user = UserModel(email=user_email)
-      db.session.add(user)
-      db.session.commit()
+    if user:
+        user.name = id_data['name']
+        user.sub = id_data['sub']
+        user.given_name = id_data['given_name']
+        user.family_name = id_data['family_name']
+        user.picture_url = id_data['picture']
+    else:
+        user = UserModel(
+          email=user_email,
+          sub=id_data['name'],
+          name=id_data['name'],
+          given_name=id_data['given_name'],
+          family_name=id_data['family_name'],
+          picture_url=id_data['picture']
+        )
+    db.session.add(user)
+    db.session.commit()
 
     login_user(user)
 
@@ -101,7 +118,6 @@ def auth_callback():
         user.google_credentials = pickle.dumps(flow.credentials)
         db.session.add(user)
         db.session.commit()
-        
 
     return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 

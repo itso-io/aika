@@ -22,6 +22,8 @@ from sqlalchemy.orm import sessionmaker
 HISTORIC_DAYS_TO_PULL = 31
 FUTURE_DAYS_TO_PULL = 31
 
+CALENDAR_SYNC_HANDLER_URL = '/api/syncs/tasks/calendar_sync'
+
 
 def update_task_status():
     pass
@@ -36,7 +38,6 @@ def store_calendar_event_attendees(event, attendee, email, database_session, is_
         'invited_email': email,
         'is_organizer': is_organizer
     }
-
 
 
     if attendee:
@@ -59,8 +60,6 @@ def store_calendar_event_attendees(event, attendee, email, database_session, is_
         attendee_values['response_status'] = 'accepted'
         
         attendee_values['comment'] = ''
-
-
 
 
     if calendar_user_alias:
@@ -179,7 +178,8 @@ def insert_or_update(obj_type, primary_key, values, session):
 def store_calendar_users(users, database_session):
     obs = []
     for user in users:
-        primary_key = int(user.get('id'))
+        primary_key = user.get('id')
+        print(primary_key)
         values = {
           'id': user.get('id'),
           'primary_alias': user.get('primaryEmail'),
@@ -189,15 +189,24 @@ def store_calendar_users(users, database_session):
           'current_calendar_timezone': user.get('timezone')
         }
         calendar_user = insert_or_update(CalendarUser, primary_key, values, database_session)
-
-        for email in user.get('emails'):
-            primary_key = email.get('address')
+        if user.get('emails'):
+            for email in user.get('emails'):
+                primary_key = email.get('address')
+                values = {
+                    'alias': primary_key,
+                    'calendar_user': calendar_user,
+                    'calendar_user_id': calendar_user.id
+                }
+                insert_or_update(CalendarUserAlias, primary_key, values, database_session)
+        else:
+            primary_key = user.get('primaryEmail')
             values = {
-              'alias': primary_key,
-              'calendar_user': calendar_user,
-              'calendar_user_id': calendar_user.id
+                'alias': user.get('primaryEmail'),
+                'calendar_user': calendar_user,
+                'calendar_user_id': calendar_user.id
             }
             insert_or_update(CalendarUserAlias, primary_key, values, database_session)
+
     database_session.commit()
 
 
@@ -210,9 +219,23 @@ def get_calendar_users(user, calendars, cal_client):
     users = []
     i = 0
     while True:
-        user_list = user_client.users().list(
-            pageToken=page_token, viewType='domain_public', domain=domain).execute()
-        page_users = user_list.get('users', [])
+        if domain == 'gmail.com':
+            user_list = None
+            page_users = [{
+                'id': user.sub, # sub
+                'primaryEmail': user.email,
+                'name': {
+                    'givenName': user.given_name,
+                    'familyName': user.family_name,
+                    'fullName': user.name
+                }
+            }]
+            print(page_users)
+        else:
+            user_list = user_client.users().list(
+                pageToken=page_token, 
+                viewType='domain_public', domain=domain).execute()
+            page_users = user_list.get('users', [])
         for entry in page_users:
             if entry['primaryEmail'] in calendars:
                 request = cal_client.calendars().get(calendarId=entry['primaryEmail']).execute()
@@ -222,7 +245,8 @@ def get_calendar_users(user, calendars, cal_client):
                 entry['timezone'] = request.get('timeZone')
 
                 users.append(entry)
-        page_token = user_list.get('nextPageToken')
+        if user_list:
+            page_token = user_list.get('nextPageToken')
         if not page_token:
             break
     return users
@@ -252,3 +276,13 @@ def calendar_sync_main(user_id, calendars):
     return {
         "DONE": True
     }
+
+
+def start_calendar_sync_task(req, calendar_sync_settings):
+    user_id = calendar_sync_settings.user_id
+    calendars = calendar_sync_settings.synced_calendars
+
+    create_task(req, CALENDAR_SYNC_HANDLER_URL, {
+        "user_id": user_id,
+        "calendars": calendars
+    })

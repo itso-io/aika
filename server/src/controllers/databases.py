@@ -8,6 +8,8 @@ from utils.database import get_db_url, email_to_name
 from utils.enums import APIErrorTypes
 from utils.errors import APIError
 
+from controllers.metabase import createMetabase
+
 
 def initialize_database(user):
     new_db_name = email_to_name(user.email)
@@ -53,7 +55,8 @@ def initialize_database(user):
 
     # Step 3: Create the new user so that someone can connect
     create_user_query = f'CREATE USER \'{new_db_name}\'@\'%%\' ' \
-                        f'IDENTIFIED BY \'{new_password}\';'
+                        f'IDENTIFIED WITH mysql_native_password ' \
+                        f'BY \'{new_password}\';'
     db.engine.execute(create_user_query)
 
     # Step 4: Give the user the right privileges
@@ -68,12 +71,12 @@ def initialize_database(user):
     ]
     priveleges_string = ', '.join(priveleges)
 
+    priveleges_string = 'ALL PRIVILEGES'
+
     grant_perms_query = f'GRANT {priveleges_string} ON {new_db_name}.* ' \
                         f'TO \'{new_db_name}\'@\'%%\';'
 
     db.engine.execute(grant_perms_query)
-
-
 
     # Step 5: Create the alembic table for migration purposes
     alembic_create_query = f'CREATE TABLE `{new_db_name}`.`alembic_version` ' \
@@ -105,14 +108,17 @@ def initialize_database(user):
     db.session.add(new_database)
     db.session.commit()
 
+    createMetabase(user)
+
     return new_database
 
 
 def get_user_database(user):
-  # using more elaborate syntax here because `UserDatabase.query` is a table column.
-  existing_database = db.session.query(UserDatabase).filter_by(user_id=user.id).one_or_none()
+    # using more elaborate syntax here because `UserDatabase.query` is a table column.
+    existing_database = db.session.query(
+        UserDatabase).filter_by(user_id=user.id).one_or_none()
 
-  if existing_database:
-    return existing_database
+    if existing_database:
+        return existing_database
 
-  return initialize_database(user)
+    return initialize_database(user)

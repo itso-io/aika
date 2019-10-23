@@ -69,7 +69,7 @@ class CalendarEventAttendees(Base):
     # The ID of the user that was invited, regardless of which email alias was used for the invite
     calendar_user_id = db.Column(db.String(100), db.ForeignKey('calendar_user.id'))
 
-    # Get timezone from event if possibe
+    # Get timezone from event if possibe. 
     timezone = db.Column(db.String(200))
     # TODO As long as this isn't available, lets assume 9-5
     working_hours_start_time = db.Column(db.TIME)

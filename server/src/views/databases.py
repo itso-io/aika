@@ -1,7 +1,10 @@
-from flask import Blueprint, session, request, jsonify
+from datetime import datetime, timedelta
+
+from flask import Blueprint, session, request, jsonify, make_response
 from flask_login import login_required, current_user
 
 from controllers.databases import get_user_database
+from controllers.metabase import create_metabase_session
 
 databases = Blueprint('databases', __name__)
 
@@ -9,11 +12,22 @@ databases = Blueprint('databases', __name__)
 @login_required
 def get_my_database():
   user_database = get_user_database(current_user)
+  metabase_session = create_metabase_session(current_user)
 
-  return jsonify({
+  host = request.host
+
+  print(host)
+
+  resp = make_response(jsonify({
     'host': user_database.host,
     'port': user_database.port,
     'username': user_database.username,
     'password': user_database.password,
     'name': user_database.database
-  })
+  }))
+
+  exp = datetime.now() + timedelta(days=31)
+  print(metabase_session)
+
+  resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp)
+  return resp
