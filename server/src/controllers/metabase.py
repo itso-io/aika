@@ -90,7 +90,7 @@ def createDatabase(email, db_host, db_port, db_name, db_user, db_password, sessi
         "name": email + " db",
         "engine": "mysql",
         "details": {
-            "host": 'host.docker.internal',
+            "host": db_host,
             "port": db_port,
             "dbname": db_name,
             "user": db_user,
@@ -141,7 +141,7 @@ def create_metabase_session(user):
     return new_user_session
 
 
-def createMetabase(aika_user):
+def createMetabase(aika_user, local=False):
     global base_url
     # root user
     username = app.config['METABASE_USERNAME']
@@ -168,7 +168,7 @@ def createMetabase(aika_user):
     # TODO this is assuming one database, which might change over time
     aika_db = aika_user.databases[0]
     # Use the user details
-    db_host = aika_db.host
+    db_host = 'host.docker.internal' if local else aika_db.host
     db_port = aika_db.port
     db_name = aika_db.database
     db_user = aika_db.username

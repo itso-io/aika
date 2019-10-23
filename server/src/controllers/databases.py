@@ -11,7 +11,7 @@ from utils.errors import APIError
 from controllers.metabase import createMetabase
 
 
-def initialize_database(user):
+def initialize_database(user, local):
     new_db_name = email_to_name(user.email)
     new_password = random_password()
 
@@ -108,12 +108,12 @@ def initialize_database(user):
     db.session.add(new_database)
     db.session.commit()
 
-    createMetabase(user)
+    createMetabase(user, local)
 
     return new_database
 
 
-def get_user_database(user):
+def get_user_database(user, local):
     # using more elaborate syntax here because `UserDatabase.query` is a table column.
     existing_database = db.session.query(
         UserDatabase).filter_by(user_id=user.id).one_or_none()
@@ -121,4 +121,6 @@ def get_user_database(user):
     if existing_database:
         return existing_database
 
-    return initialize_database(user)
+
+
+    return initialize_database(user, local)

@@ -11,7 +11,9 @@ databases = Blueprint('databases', __name__)
 @databases.route('/api/databases/mine')
 @login_required
 def get_my_database():
-  user_database = get_user_database(current_user)
+
+
+  user_database = get_user_database(current_user, 'localhost' in request.host)
   metabase_session = create_metabase_session(current_user)
 
   host = request.host
