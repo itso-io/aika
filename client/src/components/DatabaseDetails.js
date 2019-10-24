@@ -13,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { Link } from "react-router-dom";
 import ReactTooltip from 'react-tooltip'
 import * as actions from '../actions';
 import { syncStatusPerCalendar } from '../getters';
@@ -21,6 +22,7 @@ import { syncStatusPerCalendar } from '../getters';
 const mapStateToProps = (state) => ({
   userEmail: state.getIn(['userInfo', 'email']),
   availableCalendars: state.get('availableCalendars'),
+  syncedCalendars: state.get('syncedCalendars'),
   syncStatusPerCalendar: syncStatusPerCalendar(state),
   connectionDetails: state.get('databaseDetails')
 });
@@ -158,44 +160,50 @@ const ConnectionDetails = ({ details }) => {
 };
 
 
-
-
-class SyncProgressIndicator extends React.Component {
+class CalendarsSelector extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { dotCount: 0 };
-  }
-
-  time() {
-    const dotCount = this.state.dotCount === 3 ? 0 : this.state.dotCount + 1;
-
-    this.setState({ dotCount });
-
-    setTimeout(this.time.bind(this), 500);
+    this.state = { syncing: false };
   }
 
   componentDidMount() {
-    this.time();
+    if (this.props.syncedCalendars.size === 0) {
+      this.selectAll(true);
+    }
   }
 
-  render() {
-    return (
-      <div>{`Syncing${[...Array(this.state.dotCount).keys()].map(k => '.').join('')}`}</div>
-    );
-  }
-}
+  selectAll = (select) => {
+    this.props.availableCalendars.forEach(cal => this.props.selectCalendar(cal.get('id'), select));
+  };
 
-
-class CalendarsSelector extends React.Component {
   handleChange = calendarId => event => {
     this.props.selectCalendar(calendarId, event.target.checked);
+  };
+
+  handleSubmit = () => {
+    this.props.updateSyncSettings();
+
+    this.setState({ syncing: true });
+  };
+
+  bulkSelect = () => {
+    const noneSelected = this.props.syncedCalendars.size === 0;
+
+    if (noneSelected) {
+      this.selectAll(true);
+    } else {
+      this.selectAll(false);
+    }
   };
 
   render() {
     const sortedCalendars = this.props.availableCalendars.sort(
       (cal1, cal2) => cal1.get('id') === this.props.userEmail ? -1 : 0
     );
+
+    const noneSelected = this.props.syncedCalendars.size === 0;
+    const allSelected = this.props.availableCalendars.size === this.props.syncedCalendars.size;
 
     return (
         <div>
@@ -204,6 +212,17 @@ class CalendarsSelector extends React.Component {
           </h4>
           <FormControl component="fieldset">
             <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!noneSelected}
+                    onChange={this.bulkSelect}
+                    color="secondary"
+                    indeterminate={!noneSelected && !allSelected}
+                  />
+                }
+                label=""
+              />
               {sortedCalendars.map(calendar => {
                 const calendarId = calendar.get('id');
 
@@ -219,15 +238,25 @@ class CalendarsSelector extends React.Component {
             <Button
                 variant="contained"
                 color="primary"
-                onClick={this.props.updateSyncSettings}
+                style={{marginTop: '5px'}}
+                onClick={this.handleSubmit}
             >
               Start sync
             </Button>
           </FormControl>
           <div style={{marginTop: '20px'}} />
           {
-            this.props.syncStatus !== 'syncing' ? null :
-                <SyncProgressIndicator />
+            !this.state.syncing ? null :
+                <p>
+                  Aika has started syncing your calendar data to your very own MySQL database. Aika
+                  initially syncs events from 30 days in the past and 30 days in the future, and the
+                  sync will take about 30 seconds per calendar.
+                  <br />
+                  <br />
+                  Head to <Link to="/analytics">Analytics</Link> to learn how to use the Metabase instance
+                  we've set up for you. Or, use the MySQL credentials below to query your data with any
+                  tool you like.
+                </p>
           }
         </div>
     );
@@ -252,7 +281,9 @@ class DatabaseDetails extends React.Component {
             <p>
               You are signed in as <b>{this.props.userEmail}</b>.
             </p>
-            <CalendarsSelectorContainer />
+            {this.props.availableCalendars.size === 0 ? null :
+                <CalendarsSelectorContainer />
+            }
             <br />
             <ConnectionDetails details={this.props.connectionDetails} />
           </Container>

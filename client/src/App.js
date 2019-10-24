@@ -9,6 +9,7 @@ import {
 import Analyses from './components/Analytics/index';
 import DatabaseDetails from './components/DatabaseDetails';
 import Nav from './components/Nav';
+import Footer from './components/Footer';
 import SignInButton from './components/SignIn';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
             </Switch>
           </div>
         </Container>
+        <Footer />
       </React.Fragment>
     </Router>
   );

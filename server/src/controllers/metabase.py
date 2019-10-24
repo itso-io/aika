@@ -52,7 +52,7 @@ def createMetabaseGroup(username, session):
         url,
         json=group,
         headers={
-            'Cookie': 'metabase.SESSION=' + session
+            'X-Metabase-Session': session
         }
     )
 
@@ -72,7 +72,7 @@ def createMetabaseUser(first, last, email, pwd, group_id, session):
         url,
         json=user,
         headers={
-            'Cookie': 'metabase.SESSION=' + session
+            'X-Metabase-Session': session
         }
     )
     return result
@@ -100,7 +100,7 @@ def createDatabase(email, db_host, db_port, db_name, db_user, db_password, sessi
         url,
         json=database,
         headers={
-            'Cookie': 'metabase.SESSION=' + session
+            'X-Metabase-Session': session
         }
     )
 
@@ -112,7 +112,7 @@ def getGraph(session):
     return requests.get(
         url,
         headers={
-            'Cookie': 'metabase.SESSION=' + session
+            'X-Metabase-Session': session
         }
     )
 
@@ -125,7 +125,7 @@ def putGraph(graph, session):
         url,
         json=graph,
         headers={
-            'Cookie': 'metabase.SESSION=' + session
+            'X-Metabase-Session': session
         }
     )
 

@@ -14,8 +14,11 @@ const SignInButton = () => (
           or anything else that can make use of a MySQL database.
         </p>
         <p>
-          To get started, sign in with Google. Aika requests two permissions:
+          To get started, sign in with Google. Aika requests three permissions:
           <ol>
+            <li>
+              Read-only access to your profile information, so we can use your real name to improve your experience with Aika
+            </li>
             <li>
               Read-only access to Google Calendar, so Aika can sync your events and
               event attendees (a.k.a. guests) to the private MySQL database we create for you
@@ -31,7 +34,7 @@ const SignInButton = () => (
         </a>
         <p>
           By signing into Aika, you agree to
-          Aika's <a href="https://app.getaika.com/terms">License Agreement</a> and <a href="https://app.getaika.com/privacy">Privacy Policy</a>.
+          Aika's <a href="https://www.getaika.com/license-agreement">License Agreement</a> and <a href="https://www.getaika.com/privacy-policy">Privacy Policy</a>.
         </p>
       </div>
     </Container>
