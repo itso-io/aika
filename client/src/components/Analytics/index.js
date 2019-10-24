@@ -26,7 +26,7 @@ class Analytics extends React.Component {
               While we're working hard to add more analytics directly into Aika,
               we also want you to be able to run any analysis you like as easily as
               possible. To that end, we've already added you to
-              a <a href="https://www.metabase.com" target="_blank">Metabase</a> instance
+              a <a href="https://www.metabase.com" target="_blank" rel="noopener noreferrer">Metabase</a> instance
               we manage for you. You can use Metabase to:
             </p>
             <ul>

@@ -160,35 +160,6 @@ const ConnectionDetails = ({ details }) => {
 };
 
 
-
-
-class SyncProgressIndicator extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { dotCount: 0 };
-  }
-
-  time() {
-    const dotCount = this.state.dotCount === 3 ? 0 : this.state.dotCount + 1;
-
-    this.setState({ dotCount });
-
-    setTimeout(this.time.bind(this), 500);
-  }
-
-  componentDidMount() {
-    this.time();
-  }
-
-  render() {
-    return (
-      <div>{`Syncing${[...Array(this.state.dotCount).keys()].map(k => '.').join('')}`}</div>
-    );
-  }
-}
-
-
 class CalendarsSelector extends React.Component {
   constructor(props) {
     super(props);
