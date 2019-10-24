@@ -37,17 +37,11 @@ def create_sync():
 
 @syncs.route(CALENDAR_SYNC_HANDLER_URL, methods=['POST'])
 def task_calendar_sync():
-    print("Start sync task")
     # Getting the details about the sync job
     data = request.json
     user_id = data['user_id']
     calendars = data['calendars']
 
     result = calendar_sync_main(user_id, calendars)
-
-    # Testing the async tasks
-    print("Start sleep")
-    time.sleep(5)
-    print("End sleep sleep")
 
     return jsonify(result)

@@ -122,8 +122,7 @@ def get_calendar_events(cal_client, cal):
     end_datetime = datetime.utcnow() + timedelta(days=FUTURE_DAYS_TO_PULL)
     end_datetime = end_datetime.replace(tzinfo=pytz.UTC)
 
-    print(start_datetime)
-    print(end_datetime)
+    logging.info(f'Getting calendar data for {cal_client} from {start_datetime} - {end_datetime}')
 
     try:
         all_events = []
@@ -179,7 +178,6 @@ def store_calendar_users(users, database_session):
     obs = []
     for user in users:
         primary_key = user.get('id')
-        print(primary_key)
         values = {
           'id': user.get('id'),
           'primary_alias': user.get('primaryEmail'),
@@ -230,7 +228,6 @@ def get_calendar_users(user, calendars, cal_client):
                     'fullName': user.name
                 }
             }]
-            print(page_users)
         else:
             user_list = user_client.users().list(
                 pageToken=page_token, 
@@ -240,7 +237,6 @@ def get_calendar_users(user, calendars, cal_client):
             if entry['primaryEmail'] in calendars:
                 request = cal_client.calendars().get(calendarId=entry['primaryEmail']).execute()
                 if i == 0:
-                    pprint(request)
                     i = 1
                 entry['timezone'] = request.get('timeZone')
 

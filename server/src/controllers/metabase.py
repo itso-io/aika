@@ -35,7 +35,6 @@ def randomString(stringLength=10):
 def authenticateMetabaseUser(username, password):
     global base_url
     url = f'http://{base_url}/api/session'
-    print(url)
     return requests.post(url, json={
         'username': username,
         'password': password
@@ -97,7 +96,6 @@ def createDatabase(email, db_host, db_port, db_name, db_user, db_password, sessi
             "password": db_password
         }
     }
-    print(url, database)
     return requests.post(
         url,
         json=database,

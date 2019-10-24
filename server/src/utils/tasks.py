@@ -12,10 +12,8 @@ def start_local_task(url, data):
 
 
 def create_task(req, relative_url, data):
-    print('Start add task function')
     if not os.getenv('GOOGLE_CLOUD_PROJECT'):
         url = f'{req.scheme}://{req.host}{relative_url}'
-        print(url)
         x = threading.Thread(target=start_local_task, daemon=True, 
                              args=[url, data])
         x.start()
@@ -49,7 +47,3 @@ def create_task(req, relative_url, data):
             task['app_engine_http_request']['body'] = converted_payload
 
         response = client.create_task(parent, task)
-
-        print('Created task {}'.format(response.name))
-
-    print('End add task function')

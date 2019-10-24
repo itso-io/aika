@@ -33,9 +33,7 @@ def _is_relevant_calendar(calendar_id, user_email):
 @calendars.route('/api/calendars')
 @login_required
 def get_calendars():
-  print(current_user.id)
-  cal_client = get_calendar_api_client(current_user.id
-  )
+  cal_client = get_calendar_api_client(current_user.id)
 
   calendars = []
   page_token = None

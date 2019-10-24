@@ -19,8 +19,6 @@ def get_my_database():
 
   host = request.host
 
-  print(host)
-
   resp = make_response(jsonify({
     'host': user_database.host,
     'port': user_database.port,
@@ -30,10 +28,8 @@ def get_my_database():
   }))
 
   exp = datetime.now() + timedelta(days=31)
-  print(metabase_session)
   if 'localhost' in request.host:
     resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp)
   else:
-    print("Cookie domain: " + app.config['METABASE_URL'])
     resp.set_cookie('metabase.SESSION', value=metabase_session, expires=exp, domain='.'+app.config['DOMAIN_BASE'])
   return resp

@@ -86,8 +86,6 @@ def auth_callback():
 
     user_email = None if not id_data['email_verified'] else id_data['email']
 
-    print(id_data)
-
     if not user_email:
         return redirect('/')
 
