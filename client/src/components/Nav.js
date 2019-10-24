@@ -36,6 +36,12 @@ class Nav extends React.Component {
     };
   }
 
+  componentWillMount = () => {
+    this.props.history.listen((location, action) => {
+      this.setState({currentPath: location.pathname.trim()});
+    });
+  };
+
   componentDidUpdate = () => {
     if (this.state.currentPath.length > 1 && this.props.userInfo === null) {
       this.handleChange(null, '/');
