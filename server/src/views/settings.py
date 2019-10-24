@@ -29,7 +29,6 @@ def get_settings(user_id):
 
     db.session.add(settings)
     db.session.commit()
-    db.session.close()
 
     return settings
 
@@ -48,5 +47,5 @@ def update_settings():
     settings.synced_calendars = request.get_json()['synced_calendars']
 
     start_calendar_sync_task(request, settings)
-
-    return _to_json(settings)
+    json_response = _to_json(settings)
+    return json_response

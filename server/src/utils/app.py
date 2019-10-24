@@ -1,5 +1,8 @@
 from os import getenv
 import collections
+from datetime import datetime, timezone
+import datetime as ddt
+import pytz
 
 from flask import Flask, json
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -23,6 +26,7 @@ def new_alchemy_encoder(fields_to_expand=[]):
     class AlchemyEncoder(json.JSONEncoder):
 
         def field_condition(self, x):
+            
             return not x.startswith('_') and \
                    x != 'metadata' and \
                    x != 'query' and \
@@ -30,6 +34,7 @@ def new_alchemy_encoder(fields_to_expand=[]):
 
         def default(self, obj):
             if isinstance(obj.__class__, DeclarativeMeta):
+                print()
                 # don't re-visit self
                 if obj in _visited_objs:
                     return None
@@ -47,6 +52,10 @@ def new_alchemy_encoder(fields_to_expand=[]):
                             # not expanding this field: set it to None and continue
                             fields[field] = None
                             continue
+                    if isinstance(val, datetime):
+                        ts = val.timestamp()
+                        temp_val = datetime.utcfromtimestamp(ts).replace(tzinfo=pytz.utc)
+                        val = temp_val.isoformat()
                     fields[field] = val
                 # a json-encodable dict
                 return fields

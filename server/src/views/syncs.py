@@ -10,6 +10,7 @@ from data.api_credentials import get_calendar_api_client, get_user_api_client
 from models.base import db
 from models.app_main import User, Settings
 from models.user_calendar import CalendarEvents, CalendarEventAttendees, CalendarUser, CalendarUserAlias
+from models.app_sync import Sync
 from controllers.syncs import calendar_sync_main, start_calendar_sync_task, CALENDAR_SYNC_HANDLER_URL
 
 from sqlalchemy.orm import sessionmaker
@@ -18,10 +19,12 @@ from sqlalchemy.orm import sessionmaker
 syncs = Blueprint('syncs', __name__)
 
 # TODO Store and use synctokens
-@syncs.route('/api/syncs/')
+@syncs.route('/api/syncs/mine')
 @login_required
 def list_syncs():
-    return jsonify([])
+    user_id = current_user.id
+    sync = Sync.query.filter_by(user_id=current_user.id).order_by(Sync.time_created).first()
+    return jsonify(sync, fields_to_expand=['tasks'])
 
 
 @syncs.route('/api/syncs', methods=['POST'])
