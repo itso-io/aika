@@ -107,6 +107,7 @@ def initialize_database(user, local):
     # create a new User and UserDatabase row
     db.session.add(new_database)
     db.session.commit()
+    db.session.close()
 
     createMetabase(user, local)
 

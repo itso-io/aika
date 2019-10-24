@@ -165,6 +165,7 @@ def createMetabase(aika_user, local=False):
 
     db.session.add(metabase_user)
     db.session.commit()
+    db.session.close()
 
     # TODO this is assuming one database, which might change over time
     aika_db = aika_user.databases[0]

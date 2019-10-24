@@ -2,7 +2,6 @@ import time
 
 from flask_login import login_required, current_user
 from flask import Blueprint, session, request
-from sqlalchemy import create_engine
 
 
 from utils.app import jsonify, app

@@ -114,6 +114,7 @@ def store_calendar_events(calendar_id, data, database_session):
     database_session.commit()
 
 
+
 def get_calendar_events(cal_client, cal):
     # Loop through all the calendars we need to fetch
     start_datetime = datetime.utcnow() - timedelta(days=HISTORIC_DAYS_TO_PULL)
@@ -122,7 +123,7 @@ def get_calendar_events(cal_client, cal):
     end_datetime = datetime.utcnow() + timedelta(days=FUTURE_DAYS_TO_PULL)
     end_datetime = end_datetime.replace(tzinfo=pytz.UTC)
 
-    logging.info(f'Getting calendar data for {cal_client} from {start_datetime} - {end_datetime}')
+    logging.info(f'Getting calendar data for {cal} from {start_datetime} - {end_datetime}')
 
     try:
         all_events = []
