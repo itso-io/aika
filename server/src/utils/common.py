@@ -4,6 +4,7 @@ import random
 import string
 from hashlib import md5
 
+from datetime import datetime, timezone
 # Installed
 # N/A
 
@@ -34,3 +35,7 @@ def get_file_full_path(relative_to_root):
 
 def md5_hash(s):
     return md5(s.encode()).hexdigest()
+
+
+def now():
+    return datetime.now()

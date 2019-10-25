@@ -165,7 +165,6 @@ def createMetabase(aika_user, local=False):
 
     db.session.add(metabase_user)
     db.session.commit()
-    db.session.close()
 
     # TODO this is assuming one database, which might change over time
     aika_db = aika_user.databases[0]
@@ -212,6 +211,5 @@ def createMetabase(aika_user, local=False):
 
     # This value can be used to set a cookie on the users browser that will automatically log the user in to metabase
     new_user_session = authentication_response.json()['id']
-
     
     return new_user_session

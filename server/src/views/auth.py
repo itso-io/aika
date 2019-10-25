@@ -115,7 +115,6 @@ def auth_callback():
 
     db.session.add(user)
     db.session.commit()
-    db.session.close()
 
     return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 
