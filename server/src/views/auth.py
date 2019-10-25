@@ -54,9 +54,8 @@ def auth_init():
     authorization_url_kwargs = {'access_type': 'offline',
                                 'include_granted_scopes': 'true'}
 
-    if env.is_local():
-        # this simplifies the local development flow where we often want to re-authorize a user
-        authorization_url_kwargs['prompt'] = 'consent'
+    
+    authorization_url_kwargs['prompt'] = 'consent'
 
     authorization_url, state = flow.authorization_url(
         **authorization_url_kwargs)
