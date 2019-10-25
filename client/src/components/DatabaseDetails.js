@@ -28,7 +28,7 @@ const mapStateToProps = (state) => ({
 });
 
 
-class ClickToCopyText extends React.Component {
+class Cleartext extends React.Component {
   constructor(props) {
     super(props);
 
@@ -50,13 +50,17 @@ class ClickToCopyText extends React.Component {
   render() {
     const { text } = this.props;
     const { justCopied } = this.state;
+    let dataTip = !justCopied ? 'Click to copy' : 'Copied!';
+    if (!this.props.clickToCopy) {
+      dataTip = null;
+    }
 
     return (
         <span
           key={justCopied ? 'copied' : 'copy' /* (forces re-render of tooltip) */}
-          data-tip={!justCopied ? 'Click to copy' : 'Copied!'}
+          data-tip={dataTip}
           style={{cursor: 'pointer'}}
-          onClick={this.copy}
+          onClick={this.props.clickToCopy ? this.copy : () => {}}
         >
           {text}
           <ReactTooltip effect="solid" />
@@ -99,7 +103,7 @@ class PasswordCell extends React.Component {
                 />
           }
           {!showPassword ? <span>************</span> :
-            <ClickToCopyText text={password} />
+            <Cleartext text={password} clickToCopy={true} />
           }
         </TableCell>
     )
@@ -113,23 +117,37 @@ const ConnectionDetails = ({ details }) => {
   const rows = [
     {
       label: 'Host',
-      value: details.get('host')
+      value: details.get('host'),
+      clickToCopy: true
     },
     {
       label: 'Port',
-      value: details.get('port')
+      value: details.get('port'),
+      clickToCopy: true
     },
     {
       label: 'Username',
-      value: details.get('username')
+      value: details.get('username'),
+      clickToCopy: true
     },
     {
       label: 'Password',
-      value: details.get('password')
+      value: details.get('password'),
+      clickToCopy: true
     },
     {
       label: 'Database name',
-      value: details.get('name')
+      value: details.get('name'),
+      clickToCopy: true
+    },
+    {
+      label: 'Certificate Authority file for SSL',
+      value: (
+        <a href="https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem" target="_blank" rel="noopener noreferrer">
+          Download here
+        </a>
+      ),
+      clickToCopy: false
     }
   ];
 
@@ -145,12 +163,12 @@ const ConnectionDetails = ({ details }) => {
                   <TableCell component="th" scope="row">
                     {row.label}
                   </TableCell>
-                  {row.label !== 'Password' ?
                       <TableCell align="right" style={{'fontFamily': '"Courier New", Courier, monospace'}}>
-                        <ClickToCopyText text={row.value} />
+                        {row.label !== 'Password' ?
+                            <Cleartext text={row.value} clickToCopy={row.clickToCopy} />
+                            : <PasswordCell password={row.value}/>
+                        }
                       </TableCell>
-                      : <PasswordCell password={row.value} />
-                  }
                 </TableRow>
             ))}
           </TableBody>

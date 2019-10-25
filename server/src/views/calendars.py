@@ -14,20 +14,15 @@ def _is_relevant_calendar(calendar_id, user_email):
   # - {"id": "itsotester3@gmail.com", "summary": "itsotester3@gmail.com"}
   # - {"id": "6e6hrodgbluct03bq6h62sdbf8@group.calendar.google.com", "summary": "My Second Calendar"}
   # - {"id": "itso.io_achdr2ab8qi9hmado0legi54bk@group.calendar.google.com", "summary": "Jon's Second Calendar"}
+  # - {"id": "adi07f5ph020mdjvtv07fbinpphe6svf@import.calendar.google.com", "summary": "Brad's example}
   # - {"id": "jon@itso.io", "summary": "jon@itso.io"}
 
-  if calendar_id == user_email:
-    return True
+  EXCLUDED_SUFFIXES = [
+    '#holiday@group.v.calendar.google.com',
+    '#contacts@group.v.calendar.google.com'
+  ]
 
-  if calendar_id.endswith('@group.calendar.google.com'):
-    return True
-
-  user_domain = user_email.split('@')[1]
-
-  if user_domain == 'gmail.com':
-    return False
-
-  return calendar_id.startswith('%s_' % (user_domain)) or calendar_id.endswith('@%s' % (user_domain))
+  return not next((suffix for suffix in EXCLUDED_SUFFIXES if calendar_id.endswith(suffix)), None)
 
 
 @calendars.route('/api/calendars')
