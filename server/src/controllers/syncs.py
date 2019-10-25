@@ -87,8 +87,6 @@ def store_calendar_events(calendar_id, data, database_session, sync_id):
             primary_key = event.get('id')
             values = {
                 "event_id": primary_key,
-                "created_at": dateutil.parser.parse(event.get('created')),
-                "updated_at": dateutil.parser.parse(event.get('updated')),
                 "organizer_email": get_nested(event, 'organizer', 'email'),
                 "creator_email": get_nested(event, 'creator', 'email'),
                 "status": event.get('status'),
@@ -103,6 +101,12 @@ def store_calendar_events(calendar_id, data, database_session, sync_id):
 
             if get_nested(event, 'end', 'dateTime'):
                 values["end_time"] = dateutil.parser.parse(get_nested(event, 'end', 'dateTime'))
+
+            if event.get('created'):
+                values["created_at"]: dateutil.parser.parse(event.get('created'))
+
+            if event.get('updated'):
+                values["updated_at"]: dateutil.parser.parse(event.get('updated'))
 
             is_organizer = get_nested(event, 'organizer', 'self')
 
