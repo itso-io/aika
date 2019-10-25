@@ -23,7 +23,14 @@ syncs = Blueprint('syncs', __name__)
 @login_required
 def list_syncs():
     user_id = current_user.id
-    sync = Sync.query.filter_by(user_id=current_user.id).order_by(Sync.time_created).first()
+    sync = Sync.query.filter_by(user_id=current_user.id).all()
+    return jsonify(sync, fields_to_expand=['tasks'])
+
+@syncs.route('/api/syncs/last')
+@login_required
+def last_syncs():
+    user_id = current_user.id
+    sync = Sync.query.filter_by(user_id=current_user.id).order_by(Sync.time_created.desc()).first()
     return jsonify(sync, fields_to_expand=['tasks'])
 
 

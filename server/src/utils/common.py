@@ -4,7 +4,7 @@ import random
 import string
 from hashlib import md5
 
-import datetime
+from datetime import datetime, timezone
 # Installed
 # N/A
 
@@ -38,4 +38,4 @@ def md5_hash(s):
 
 
 def now():
-    return datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+    return datetime.now()
