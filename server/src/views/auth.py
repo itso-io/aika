@@ -105,15 +105,14 @@ def auth_callback():
           family_name=id_data['family_name'],
           picture_url=id_data['picture']
         )
-
+    db.session.add(user)
+    db.session.commit()
     login_user(user)
 
     # refresh token only provided on initial auth
     if flow.credentials.refresh_token:
         user.google_credentials = pickle.dumps(flow.credentials)
-
-    db.session.add(user)
-    db.session.commit()
+        db.session.commit()
 
     return redirect('%s/database' % ('http://localhost:3000' if env.is_local() else ''))
 
