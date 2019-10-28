@@ -43,6 +43,8 @@ export const selectCalendar = (calendarId, selected) => ({
 
 
 export const updateSyncSettings = () => (dispatch, getState) => {
+  window.fbq('track', 'CompleteRegistration');
+
   axios.post('/api/settings/mine', {
       synced_calendars: getState().get('syncedCalendars').toArray()
     })
