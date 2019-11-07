@@ -7,10 +7,10 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 const TABS = [
-  {
-    label: 'Database',
-    path: '/database'
-  },
+  // {
+  //   label: 'Database',
+  //   path: '/database'
+  // },
   {
     label: 'Analytics',
     path: '/analytics'
@@ -50,7 +50,8 @@ class Nav extends React.Component {
 
   handleChange = (event, newValue) => {
     this.setState({ currentPath: newValue });
-    this.props.history.push(newValue)
+    this.props.history.push(newValue);
+    window.analytics.page();
   };
 
   render() {
