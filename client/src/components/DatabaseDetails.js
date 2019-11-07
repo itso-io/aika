@@ -163,12 +163,12 @@ const ConnectionDetails = ({ details }) => {
                   <TableCell component="th" scope="row">
                     {row.label}
                   </TableCell>
+                      {row.label !== 'Password' ?
                       <TableCell align="right" style={{'fontFamily': '"Courier New", Courier, monospace'}}>
-                        {row.label !== 'Password' ?
                             <Cleartext text={row.value} clickToCopy={row.clickToCopy} />
-                            : <PasswordCell password={row.value}/>
-                        }
                       </TableCell>
+                      : <PasswordCell password={row.value}/>
+                      }
                 </TableRow>
             ))}
           </TableBody>

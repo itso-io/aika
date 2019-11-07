@@ -50,7 +50,8 @@ class Nav extends React.Component {
 
   handleChange = (event, newValue) => {
     this.setState({ currentPath: newValue });
-    this.props.history.push(newValue)
+    this.props.history.push(newValue);
+    window.analytics.page();
   };
 
   render() {
