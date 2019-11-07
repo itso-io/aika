@@ -110,6 +110,38 @@ class PasswordCell extends React.Component {
   }
 }
 
+const SyncStarted = () => {
+  return  (
+              <div>
+                <p>
+                  Aika has started syncing your calendar data to your very own MySQL database. Aika
+                  initially syncs events from 30 days in the past and 30 days in the future, and the
+                  sync will take about 30 seconds per calendar.
+                </p>
+                <p>
+                  While we're working hard to add more analytics directly into Aika,
+                  we also want you to be able to run any analysis you like as easily as
+                  possible. To that end, we've already added you to
+                  a <a href="https://www.metabase.com" target="_blank" rel="noopener noreferrer">Metabase</a> instance
+                  we manage for you. You can use Metabase to:
+                </p>
+                <ul>
+                  <li>
+                    Create charts and dashboards using pure SQL
+                  </li>
+                  <li>
+                    Create charts and dashboards using a point-and-click interface (no SQL required)
+                  </li>
+                  <li>
+                    Examine the schema of the MySQL database we created for you
+                  </li>
+                </ul>
+                <p>
+                  To start using Metabase with your calendar data, head to <a href="https://bi.getaika.com">bi.getaika.com</a>. You're already signed in! &#x1f680;
+                </p>
+              </div>
+  )
+}
 
 const ConnectionDetails = ({ details }) => {
   if (!details) return null;
@@ -165,6 +197,7 @@ const ConnectionDetails = ({ details }) => {
                   </TableCell>
                       {row.label !== 'Password' ?
                       <TableCell align="right" style={{'fontFamily': '"Courier New", Courier, monospace'}}>
+
                             <Cleartext text={row.value} clickToCopy={row.clickToCopy} />
                       </TableCell>
                       : <PasswordCell password={row.value}/>
@@ -265,16 +298,7 @@ class CalendarsSelector extends React.Component {
           <div style={{marginTop: '20px'}} />
           {
             !this.state.syncing ? null :
-                <p>
-                  Aika has started syncing your calendar data to your very own MySQL database. Aika
-                  initially syncs events from 30 days in the past and 30 days in the future, and the
-                  sync will take about 30 seconds per calendar.
-                  <br />
-                  <br />
-                  Head to <Link to="/analytics">Analytics</Link> to learn how to use the Metabase instance
-                  we've set up for you. Or, use the MySQL credentials below to query your data with any
-                  tool you like.
-                </p>
+            <SyncStarted />
           }
         </div>
     );

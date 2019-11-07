@@ -63,9 +63,9 @@ class App extends React.Component {
                 <Route path="/database">
                   <DatabaseDetails />
                 </Route>
-                <Route path="/analytics">
+                {/* <Route path="/analytics">
                   <Analyses />
-                </Route>
+                </Route> */}
                 <Route path="/">
                   <SignInButton />
                 </Route>
