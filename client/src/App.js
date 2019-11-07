@@ -6,7 +6,6 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import Analyses from './components/Analytics/index';
 import DatabaseDetails from './components/DatabaseDetails';
 import Nav from './components/Nav';
 import Footer from './components/Footer';

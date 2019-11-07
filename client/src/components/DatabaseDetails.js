@@ -13,7 +13,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { Link } from "react-router-dom";
 import ReactTooltip from 'react-tooltip'
 import * as actions from '../actions';
 import { syncStatusPerCalendar } from '../getters';
