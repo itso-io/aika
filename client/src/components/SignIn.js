@@ -1,5 +1,17 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
+import { fromJS } from 'immutable';
+import ConnectionDetails from './ConnectionDetails';
+
+
+const TEST_ACCOUNT_CONNECTION_DETAILS = fromJS({
+  host: 'hackernews.ckfjfiqb1qvb.us-east-2.rds.amazonaws.com',
+  port: 3306,
+  username: 'aikatestacct_gmail_com',
+  password: ']Ll9@PqX/&',
+  name: 'aikatestacct_gmail_com'
+});
+
 
 const signinUrl = document.location.hostname === 'localhost'
   ? 'http://localhost:5000/auth/google/init' : '/auth/google/init';
@@ -9,9 +21,13 @@ const SignInButton = () => (
       <div style={{width: '100%', marginTop: '50px',
                    display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <p>
-          Welcome to Aika! Aika lets you explore your meetings in Google Calendar with pre-built analytics and
-          open-ended SQL access, which you can use with your favorite MySQL client, Looker, Mode,
-          or anything else that can make use of a MySQL database.
+          Welcome to Aika! Aika lets you sync any Google Calendars you can access to your own MySQL database,
+          which Aika creates for you. From there, you can do whatever you like using any tool that can connect
+          to a MySQL database. As one option, here's
+          a <a href="https://colab.research.google.com/drive/18xRMmXcbk2i82A3CvZZOK2_WsKDWPKwf" target="_blank" rel="noopener noreferrer">
+          Colab template
+          </a> for
+          connecting to your Aika database and loading calendar events into a pandas DataFrame.
         </p>
         <p>
           To get started, sign in with Google. Aika requests three permissions:
@@ -35,6 +51,24 @@ const SignInButton = () => (
         <p>
           By signing into Aika, you agree to
           Aika's <a href="https://www.getaika.com/license-agreement">License Agreement</a> and <a href="https://www.getaika.com/privacy-policy">Privacy Policy</a>.
+        </p>
+        <p>
+          Not ready to sync your own calendars? Play with our public MySQL database,
+          which contains events from
+          the <a href="https://calendar.google.com/calendar/embed?src=msacpn523mpjgq0jlooh41eme4%40group.calendar.google.com" target="_blank" rel="noopener noreferrer">
+          Worldwide Space Launches</a> calendar.
+          <ul>
+            <li>
+              Explore and branch
+              off <a href="https://colab.research.google.com/drive/1JmxInvtG1j-4c40mue77Msk7AYYnW9P4#scrollTo=-LayaXSjz1QN" target="_blank" rel="noopener noreferrer">
+              this sample Colab project
+              </a> showing the launch patterns of various rockets
+            </li>
+            <li>
+              Connection details:
+            </li>
+          </ul>
+          <ConnectionDetails details={TEST_ACCOUNT_CONNECTION_DETAILS} />
         </p>
       </div>
     </Container>
